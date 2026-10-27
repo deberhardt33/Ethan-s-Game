@@ -181,6 +181,8 @@ body{
 .gear{position:absolute;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 16px);border:0;cursor:pointer;display:flex;align-items:center;gap:6px;
   padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.55);color:#53627d;font-family:var(--display);font-weight:800;font-size:15px}
 .gear span{font-size:18px}
+.gear i{font-style:normal;font-weight:600}
+.lvtag{font-size:12px;font-weight:600;color:rgba(43,58,85,.45);letter-spacing:.04em;font-family:system-ui,sans-serif;font-variant-numeric:tabular-nums;margin-top:-4px}
 .gear:focus-visible,.done:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
 .gate-card{background:var(--card);color:var(--ink);border-radius:24px;padding:22px 20px;max-width:360px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:12px;box-shadow:0 8px 0 rgba(43,58,85,.18)}
 .gate-card h2{margin:0;font-size:24px}
@@ -353,6 +355,7 @@ body{
     <button class="help" id="helpB"><span>🙋</span>Help me</button>
     <div class="explain" id="explain" hidden></div>
   </section>
+  <div class="lvtag" id="lvTag" aria-label="Difficulty level set by a parent"></div>
 </div>
 
 <div class="overlay intro" id="intro">
@@ -383,7 +386,7 @@ body{
     <div class="pick"><button class="big t mix" data-start="mix" aria-label="Play a mix">±</button><span>Mix</span></div>
   </div>
   <button class="eggbtn eggpick" aria-label="Get a new buddy"><span>🥚</span>New buddy</button>
-  <button class="gear" id="gear" aria-label="Parent settings"><span>⚙️</span>Parents</button>
+  <button class="gear" id="gear" aria-label="Parent settings"><span>⚙️</span>Parents · <i id="gearLv">Level 1</i></button>
 </div>
 <div class="overlay hatch" id="hatch" hidden>
   <div class="hatch-top"><span class="bigegg small" id="hatchEgg"></span><div class="bubble" id="hatchBubble">Pick your buddy, Ethan!</div></div>
@@ -789,7 +792,13 @@ $("skipReady").addEventListener("click",()=>{hush();finishWarmUp()});
 /* one simple level choice sets number size and how many numbers */
 const LEVELS={1:[1,2],2:[1,3],3:[2,2],4:[2,3]};
 function currentLevel(){return +Object.keys(LEVELS).find(k=>LEVELS[k][0]===digits&&LEVELS[k][1]===counts[0])||1}
-function showLevel(){const l=currentLevel();document.querySelectorAll("[data-level]").forEach(m=>m.setAttribute("aria-pressed",+m.dataset.level===l?"true":"false"))}
+const LEVEL_NAMES={1:"Easy",2:"A little harder",3:"Big numbers",4:"Big challenge"};
+function showLevelTag(){
+  const l=currentLevel();
+  const t=$("lvTag");if(t)t.textContent=`Level ${l} · ${LEVEL_NAMES[l]}`;
+  const g=$("gearLv");if(g)g.textContent=`Level ${l}`;
+}
+function showLevel(){const l=currentLevel();showLevelTag();document.querySelectorAll("[data-level]").forEach(m=>m.setAttribute("aria-pressed",+m.dataset.level===l?"true":"false"))}
 document.querySelectorAll("[data-level]").forEach(b=>b.addEventListener("click",()=>{
   const [d,c]=LEVELS[b.dataset.level];digits=d;counts=[c];showLevel();tone(700,.08);saveSettings();
 }));
@@ -1002,7 +1011,7 @@ $("hatchGrid").addEventListener("click",e=>{
 document.querySelectorAll(".eggbtn").forEach(b=>b.addEventListener("click",()=>{primeSpeech();openHatch("switch")}));
 renderBuddies();$("tapEgg").innerHTML=EGG_SVG;
 
-loadSettings();setDigits(digits);showCounts();showGames();renderStars();cur=make();renderProblem();
+loadSettings();setDigits(digits);showCounts();showGames();showLevelTag();renderStars();cur=make();renderProblem();
 </script>
 </body>
 </html>
