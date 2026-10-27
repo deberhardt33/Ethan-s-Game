@@ -432,6 +432,30 @@ function cheer(){[523,659,784,1047].forEach((f,i)=>tone(f,.18,"triangle",.2,i*.0
 function boop(){tone(220,.22,"square",.08);tone(165,.3,"square",.08,.15)}
 function hush(){try{speechSynthesis.cancel()}catch(e){}}
 let talkTimer=0;
+/* pick the most natural, friendly voice this device has.
+   Best first: kid and neural voices (Edge, Chrome), then Apple's premium and enhanced voices */
+const VOICE_PREFS=[
+  /ana.*natural/i,/ana online/i,
+  /(jenny|aria|ava|emma|michelle|sonia|libby|natasha).*natural/i,
+  /zoe.*premium/i,/ava.*premium/i,/evan.*premium/i,/samantha.*premium/i,
+  /zoe.*enhanced/i,/ava.*enhanced/i,/evan.*enhanced/i,/samantha.*enhanced/i,/allison.*enhanced/i,/susan.*enhanced/i,
+  /premium/i,/enhanced/i,/natural/i,/neural/i,
+  /google us english/i,/google uk english female/i,
+  /^samantha/i,/^karen/i,/^moira/i,/^tessa/i,/^allison/i
+];
+let bestVoice=null,kidVoice=false;
+function chooseVoice(){
+  try{
+    const all=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));if(!all.length)return;
+    const us=all.filter(v=>/en[-_]us/i.test(v.lang));
+    for(const re of VOICE_PREFS){const v=us.find(x=>re.test(x.name))||all.find(x=>re.test(x.name));if(v){bestVoice=v;break}}
+    if(!bestVoice)bestVoice=us[0]||all[0];
+    kidVoice=/ana/i.test(bestVoice.name);
+  }catch(e){}
+}
+try{chooseVoice();speechSynthesis.addEventListener("voiceschanged",chooseVoice)}catch(e){}
+/* small touches that make speech sound more human: commas for breathing room */
+function humanize(t){return t.replace(/!(?=\s|$)/g,"!").replace(/\bEthan\b/g,"Ethan,").replace(/,,/g,",").replace(/,([!?.])/g,"$1")}
 function talking(on){document.querySelectorAll(".bot").forEach(b=>b.classList.toggle("talk",on))}
 function speakTime(txt){return 500+txt.length*62}
 function say(txt,bubbleId="gameBubble"){
@@ -440,7 +464,10 @@ function say(txt,bubbleId="gameBubble"){
   if(!soundOn)return;
   try{
     const s=window.speechSynthesis;if(!s)return;s.cancel();
-    const u=new SpeechSynthesisUtterance(txt);u.rate=.92;u.pitch=1.45;
+    const u=new SpeechSynthesisUtterance(humanize(txt));
+    if(bestVoice){u.voice=bestVoice;u.lang=bestVoice.lang}
+    /* gentle, warm settings; a very high pitch is what sounds robotic */
+    u.rate=/^\d+$/.test(txt)?0.9:0.95;u.pitch=kidVoice?1.0:1.12;u.volume=1;
     u.onend=()=>{clearTimeout(talkTimer);talking(false)};
     s.speak(u);
   }catch(e){}
