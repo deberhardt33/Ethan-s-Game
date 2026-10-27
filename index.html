@@ -201,6 +201,40 @@ body{
 .tapme .hand{font-size:clamp(90px,26vw,150px);line-height:1;animation:tap 1s ease-in-out infinite;filter:drop-shadow(0 8px 0 rgba(43,58,85,.2))}
 .tapme .tapword{font-weight:800;font-size:clamp(34px,9vw,52px);color:var(--ink);background:#fff;padding:4px 28px;border-radius:999px;box-shadow:0 5px 0 rgba(43,58,85,.2);animation:pulse 1.2s infinite}
 .tapme:focus-visible{outline:4px solid var(--ink);outline-offset:-8px}
+/* Beep, Ethan's robot buddy */
+.bot{--bs:120px;flex:none;display:inline-block;line-height:0}
+.bot svg{width:var(--bs);height:auto;overflow:visible;display:block}
+.bot .eye{transform-box:fill-box;transform-origin:center;animation:blink 4.5s infinite}
+.bot .mouth{transform-box:fill-box;transform-origin:center;transition:transform .1s}
+.bot.talk .mouth{animation:talk .18s infinite alternate}
+.bot .arm-r{transform-box:fill-box;transform-origin:50% 8%}
+.bot .arm-l{transform-box:fill-box;transform-origin:50% 8%}
+.bot.wave .arm-r{animation:wave .45s 6 alternate ease-in-out}
+.bot .light{animation:glow 1.1s infinite alternate}
+.bot .whole{transform-box:fill-box;transform-origin:50% 100%}
+.bot.happy .whole{animation:hop .45s 3}
+.bot.happy .arm-l,.bot.happy .arm-r{animation:cheerArm .45s 3 alternate}
+.bot.think .whole{transform:rotate(-7deg);transition:transform .3s}
+.bot .idle{animation:float 3s ease-in-out infinite}
+.buddy{display:flex;align-items:center;gap:12px;max-width:100%}
+.bubble{position:relative;background:#fff;color:var(--ink);border-radius:22px;padding:10px 18px;font-weight:800;font-size:clamp(18px,4.6vw,26px);line-height:1.25;
+  box-shadow:0 5px 0 rgba(43,58,85,.18);max-width:18em;min-width:0;text-wrap:balance}
+.bubble::before{content:"";position:absolute;left:-14px;top:50%;margin-top:-10px;border:10px solid transparent;border-right:14px solid #fff;border-left:0}
+.bubble.pop{animation:pop .35s both}
+#introBuddy.pending{visibility:hidden}
+#introBuddy.show .bot{animation:rise .6s cubic-bezier(.3,1.5,.5,1) both}
+.buddy.mini{width:100%;max-width:640px}
+.buddy.mini .bot{--bs:58px}
+.buddy.mini .bubble{font-size:clamp(16px,4.2vw,21px);padding:8px 14px}
+#start .buddy .bot{--bs:110px}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+@keyframes talk{from{transform:scaleY(1)}to{transform:scale(1.1,3.2)}}
+@keyframes wave{from{transform:rotate(-30deg)}to{transform:rotate(-155deg)}}
+@keyframes cheerArm{from{transform:rotate(0)}to{transform:rotate(var(--up,-150deg))}}
+@keyframes glow{from{fill:#ffd23f}to{fill:#ff5fa2}}
+@keyframes rise{0%{transform:translateY(60px) scale(.6);opacity:0}100%{transform:none;opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.bot .arm-l{--up:150deg}
 @keyframes tap{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(18px) scale(.92)}}
 .sun{position:absolute;top:calc(env(safe-area-inset-top,0px) + 22px);right:max(22px,env(safe-area-inset-right,0px));width:96px;height:96px;border-radius:50%;
   background:radial-gradient(circle,#fff3a8 0 40%,var(--sun) 41% 100%);box-shadow:0 0 0 14px rgba(255,201,60,.25),0 0 0 30px rgba(255,201,60,.12);animation:spin 18s linear infinite}
@@ -236,6 +270,7 @@ body{
     <button class="iconbtn" id="restart" aria-label="Start over">↻</button>
     <button class="iconbtn" id="snd" aria-label="Sound on or off">🔊</button>
   </div>
+  <div class="buddy mini" id="gameBuddy"><div class="bot" id="gameBot" data-bot></div><div class="bubble" id="gameBubble" aria-live="polite">Let's do math, Ethan!</div></div>
   <section class="card">
     <div class="eq" id="problem"></div>
     <div class="choices" id="choices"></div>
@@ -253,15 +288,13 @@ body{
   <div class="intro-body">
     <div class="name" aria-label="Ethan's"></div>
     <div class="subtitle">Math Adventure</div>
-    <div class="parade" aria-hidden="true">
-      <span>🐸</span><span class="sym">+</span><span>🍎</span><span class="sym">−</span><span>🐶</span><span class="sym">=</span><span>⭐</span>
-    </div>
+    <div class="buddy pending" id="introBuddy"><div class="bot" id="introBot" data-bot></div><div class="bubble" id="introBubble" aria-live="polite">Hi Ethan! I'm Beep!</div></div>
     <button class="big go" id="letsgo" aria-label="Let's go">▶</button>
   </div>
   <button class="tapme" id="tapme" aria-label="Tap to start" hidden><span class="hand">👆</span><span class="tapword">Tap!</span></button>
 </div>
 <div class="overlay" id="start" hidden>
-  <div class="pick-title">Pick your game, Ethan!</div>
+  <div class="buddy" id="pickBuddy"><div class="bot" id="pickBot" data-bot></div><div class="bubble" id="pickBubble">Pick a game, Ethan!</div></div>
   <div class="pair">
     <div class="pick"><button class="big t add" data-start="add" aria-label="Play adding">+</button><span>Adding</span></div>
     <div class="pick"><button class="big t sub" data-start="sub" aria-label="Play taking away">−</button><span>Taking away</span></div>
@@ -331,10 +364,29 @@ function tone(f,d=.15,kind="sine",vol=.2,when=0){
 function cheer(){[523,659,784,1047].forEach((f,i)=>tone(f,.18,"triangle",.2,i*.09))}
 function boop(){tone(220,.22,"square",.08);tone(165,.3,"square",.08,.15)}
 function hush(){try{speechSynthesis.cancel()}catch(e){}}
-function say(txt){
+let talkTimer=0;
+function talking(on){document.querySelectorAll(".bot").forEach(b=>b.classList.toggle("talk",on))}
+function speakTime(txt){return 500+txt.length*62}
+function say(txt,bubbleId="gameBubble"){
+  const b=$(bubbleId);if(b){b.textContent=txt;b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop")}
+  clearTimeout(talkTimer);talking(true);talkTimer=setTimeout(()=>talking(false),speakTime(txt));
   if(!soundOn)return;
-  try{const s=window.speechSynthesis;if(!s)return;s.cancel();const u=new SpeechSynthesisUtterance(txt);u.rate=.9;u.pitch=1.25;s.speak(u)}catch(e){}
+  try{
+    const s=window.speechSynthesis;if(!s)return;s.cancel();
+    const u=new SpeechSynthesisUtterance(txt);u.rate=.92;u.pitch=1.45;
+    u.onend=()=>{clearTimeout(talkTimer);talking(false)};
+    s.speak(u);
+  }catch(e){}
 }
+/* say a line and wait until Beep finishes it */
+function sayWait(txt,bubbleId){
+  return new Promise(res=>{
+    say(txt,bubbleId);let done=false;const fin=()=>{if(!done){done=true;res()}};
+    setTimeout(fin,speakTime(txt)+(soundOn?900:300));
+    try{if(soundOn&&window.speechSynthesis){const iv=setInterval(()=>{if(!speechSynthesis.speaking){clearInterval(iv);setTimeout(fin,250)}},200);setTimeout(()=>clearInterval(iv),12000)}}catch(e){}
+  });
+}
+function mood(m){const b=$("gameBot");if(!b)return;b.classList.remove("happy","think");void b.offsetWidth;if(m)b.classList.add(m)}
 const word=op=>op==="+"?"plus":"minus";
 
 function dots(n){if(cur&&cur.big)return"";let h='<span class="dots">';for(let i=0;i<n;i++)h+="<i></i>";return h+"</span>"}
@@ -412,24 +464,24 @@ function showChoices(){
 function newProblem(){
   run++;busy=false;helped=false;cur=make();renderProblem();
   $("explain").hidden=true;$("explain").innerHTML="";
-  showChoices();$("helpB").hidden=false;
-  say(cur.nums.join(` ${word(cur.op)} `));
+  showChoices();$("helpB").hidden=false;mood(null);
+  say(`What is ${cur.nums.join(` ${word(cur.op)} `)}?`);
 }
 $("choices").addEventListener("click",async e=>{
   const btn=e.target.closest(".ch");if(!btn||busy)return;
   busy=true;const v=+btn.dataset.v,my=run;
   if(v===cur.ans){
-    btn.classList.add("right");fillSlot();cheer();confetti();$("helpB").hidden=true;
+    btn.classList.add("right");fillSlot();cheer();confetti();$("helpB").hidden=true;mood("happy");
     if(helped){say("Nice! You got it, Ethan!")}
     else{say(pick(["Yay!","Great job, Ethan!","You got it!","Super!","Awesome, Ethan!"]));score++;renderStars()}
     await sleep(1700);if(my!==run)return;
     if(score>=GOAL){$("win").hidden=false;cheer();confetti();say("You did it, Ethan! Ten stars!")}else newProblem();
   }else{
-    btn.classList.add("wrong");boop();
+    btn.classList.add("wrong");boop();mood("think");
     await sleep(700);if(my!==run)return;walk(v);
   }
 });
-$("helpB").addEventListener("click",()=>{if(busy)return;busy=true;helped=true;tone(700,.1);walk(null)});
+$("helpB").addEventListener("click",()=>{if(busy)return;busy=true;helped=true;tone(700,.1);mood(null);walk(null)});
 
 function item(inner,cls,delay){
   const d=document.createElement("div");d.className="ci "+cls;d.style.animationDelay=delay+"ms";
@@ -438,6 +490,7 @@ function item(inner,cls,delay){
 /* picked = the wrong number tapped, or null when "Help me" was pressed */
 async function walk(picked){
   const my=run,alive=()=>my===run;
+  const lead=picked===null?"I'll help you, Ethan! ":pick(["Good try, Ethan! ","Almost! ","That's okay, buddy! "]);
   const {nums,op,ans,emo,big}=cur,a=nums[0],b=nums[1],G=["ga","gb","gc"];
   $("choices").hidden=true;$("helpB").hidden=true;
   const ex=$("explain");ex.hidden=false;
@@ -449,7 +502,7 @@ async function walk(picked){
   const cnt=$("cnt");
   const step=async(it,label,f,ms)=>{it.querySelector(".n").textContent=label;it.classList.add("counted");tone(f,.12,"sine",.18);say(String(label));await sleep(ms)};
   if(big){
-    say(op==="+"?"Count the tens, then the ones!":"Take some away, then count what is left!");
+    say(lead+(op==="+"?"Count the tens, then the ones!":"Take some away, then count what is left!"));
     const tens=[],ones=[];let k=0;
     const groups=op==="+"?nums.map((n,g)=>[n,G[g]]):[[a,""]];
     groups.forEach(([n,c])=>{for(let i=0;i<Math.floor(n/10);i++)tens.push(item(barHTML(),"ten "+c,(k++)*70))});
@@ -471,7 +524,7 @@ async function walk(picked){
     for(const it of keepT){total+=10;await step(it,total,330,950);if(!alive())return}
     for(const it of keepO){total+=1;await step(it,total,523+(total%10)*30,850);if(!alive())return}
   }else{
-    say(op==="+"?"Let's count together!":"Take some away, then count what is left!");
+    say(lead+(op==="+"?"Let's count together!":"Take some away, then count what is left!"));
     const items=[];
     if(op==="+"){let k=0;nums.forEach((n,g)=>{for(let i=0;i<n;i++)items.push(item(emo,G[g],(k++)*60+g*200))})}
     else for(let i=0;i<a;i++)items.push(item(emo,"",i*60));
@@ -548,7 +601,7 @@ document.querySelectorAll("[data-n]").forEach(b=>b.addEventListener("click",()=>
 $("play").addEventListener("click",()=>{$("setup").hidden=true;tone(880,.1);newProblem()});
 $("back").addEventListener("click",()=>{$("setup").hidden=true;$("start").hidden=false});
 $("snd").addEventListener("click",()=>{soundOn=!soundOn;$("snd").textContent=soundOn?"🔊":"🔇";if(!soundOn)hush()});
-$("home").addEventListener("click",()=>{run++;busy=true;hush();tone(500,.1);$("start").hidden=false});
+$("home").addEventListener("click",()=>{run++;busy=true;hush();tone(500,.1);$("start").hidden=false;pickGreet()});
 $("restart").addEventListener("click",()=>{hush();tone(500,.1);$("confirm").hidden=false});
 $("yes").addEventListener("click",()=>{$("confirm").hidden=true;score=0;renderStars();say("Let's start over!");newProblem()});
 $("no").addEventListener("click",()=>{$("confirm").hidden=true});
@@ -589,20 +642,31 @@ async function dropName(withSound){
   letters.forEach((ch,i)=>boing(scale[i%scale.length],(i*gap+420)/1000));
   const end=(letters.length*gap+500)/1000;
   fanfare(end);introSung=true;
-  setTimeout(()=>say("Hi Ethan! Let's play math!"),end*1000+700);
   return end*1000+1500;
 }
 /* every visit: try to start the intro with sound right away. Browsers that block sound
    until a first touch show a big tapping hand instead, and that one touch starts the
    letters and the sound together, so the show is never silent */
+let introRun=0;
 async function showIntro(){
-  const body=$("intro").querySelector(".intro-body"),go=$("letsgo");
+  const my=++introRun,alive=()=>my===introRun&&!$("intro").hidden;
+  const body=$("intro").querySelector(".intro-body"),go=$("letsgo"),bud=$("introBuddy"),bot=$("introBot");
   body.classList.remove("waiting");$("tapme").hidden=true;
   go.classList.add("later");go.style.visibility="hidden";
+  bud.classList.add("pending");bud.classList.remove("show");
   const wait=await dropName(true);
-  if(!introSung){go.style.visibility="";return}
-  setTimeout(()=>{go.style.visibility=""},Math.max(0,wait-1200));
+  await sleep(introSung?Math.max(0,wait-900):1200);if(!alive())return;
+  /* Beep pops up, waves and says hello */
+  bud.classList.remove("pending");bud.classList.add("show");
+  if(introSung)tone(880,.08,"square",.06);
+  bot.classList.remove("wave");void bot.offsetWidth;bot.classList.add("wave");
+  await sleep(500);if(!alive())return;
+  await sayWait("Hi Ethan! I'm Beep, your computer friend!","introBubble");if(!alive())return;
+  await sayWait("Let's have fun and learn math together!","introBubble");if(!alive())return;
+  go.style.visibility="";
+  say("Tap the green button!","introBubble");
 }
+function pickGreet(){say(pick(["Pick a game, Ethan!","What should we play, Ethan?","Choose a game, buddy!"]),"pickBubble")}
 (async()=>{
   const ok=soundOn&&await unlockAudio();
   if(ok){showIntro();return}
@@ -612,11 +676,32 @@ async function showIntro(){
 $("tapme").addEventListener("click",()=>showIntro());
 window.addEventListener("keydown",()=>{if(!$("tapme").hidden)showIntro()},{once:true});
 $("intro").addEventListener("pointerdown",e=>{if($("tapme").hidden&&e.target.closest(".name"))dropName(true)});
-$("letsgo").addEventListener("click",async()=>{
-  if(!introSung){const wait=await dropName(true);await sleep(wait)}
-  else cheer();
-  $("intro").hidden=true;$("start").hidden=false;
+$("introBot").addEventListener("click",()=>{const b=$("introBot");b.classList.remove("wave");void b.offsetWidth;b.classList.add("wave");say(pick(["Beep boop! Hi Ethan!","You're my best math buddy!","Hee hee, that tickles!"]),"introBubble")});
+$("letsgo").addEventListener("click",()=>{
+  cheer();introRun++;
+  $("intro").hidden=true;$("start").hidden=false;pickGreet();
 });
+/* draw Beep everywhere he appears */
+const BOT_SVG=`<svg viewBox="0 0 120 150" aria-hidden="true"><g class="idle"><g class="whole">
+  <line x1="60" y1="10" x2="60" y2="26" stroke="#2b3a55" stroke-width="4" stroke-linecap="round"/>
+  <circle class="light" cx="60" cy="9" r="7" fill="#ffd23f" stroke="#2b3a55" stroke-width="3"/>
+  <rect x="12" y="44" width="12" height="22" rx="6" fill="#1fa596" stroke="#2b3a55" stroke-width="3"/>
+  <rect x="96" y="44" width="12" height="22" rx="6" fill="#1fa596" stroke="#2b3a55" stroke-width="3"/>
+  <rect x="20" y="26" width="80" height="64" rx="20" fill="#35d0bd" stroke="#2b3a55" stroke-width="4"/>
+  <rect x="30" y="36" width="60" height="42" rx="13" fill="#1d2f4f"/>
+  <circle class="eye" cx="47" cy="53" r="6.5" fill="#8bffe8"/>
+  <circle class="eye" cx="73" cy="53" r="6.5" fill="#8bffe8"/>
+  <circle cx="49" cy="51" r="2" fill="#fff"/><circle cx="75" cy="51" r="2" fill="#fff"/>
+  <rect class="mouth" x="51" y="66" width="18" height="4" rx="2" fill="#8bffe8"/>
+  <circle cx="27" cy="74" r="4" fill="#ff9ec4"/><circle cx="93" cy="74" r="4" fill="#ff9ec4"/>
+  <rect class="arm-l" x="16" y="96" width="12" height="32" rx="6" fill="#35d0bd" stroke="#2b3a55" stroke-width="3"/>
+  <rect class="arm-r" x="92" y="96" width="12" height="32" rx="6" fill="#35d0bd" stroke="#2b3a55" stroke-width="3"/>
+  <rect x="30" y="92" width="60" height="44" rx="14" fill="#35d0bd" stroke="#2b3a55" stroke-width="4"/>
+  <rect x="44" y="102" width="32" height="22" rx="7" fill="#fff" stroke="#2b3a55" stroke-width="2.5"/>
+  <text x="60" y="120" text-anchor="middle" font-family="Baloo 2,Comic Sans MS,sans-serif" font-weight="800" font-size="20" fill="#ff8a3d">+</text>
+  <rect x="38" y="136" width="14" height="10" rx="4" fill="#2b3a55"/><rect x="68" y="136" width="14" height="10" rx="4" fill="#2b3a55"/>
+</g></g></svg>`;
+document.querySelectorAll("[data-bot]").forEach(el=>el.innerHTML=BOT_SVG);
 
 setDigits(1);renderStars();cur=make();renderProblem();
 </script>
