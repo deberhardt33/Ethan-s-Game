@@ -458,27 +458,43 @@ try{chooseVoice();speechSynthesis.addEventListener("voiceschanged",chooseVoice)}
 function humanize(t){return t.replace(/!(?=\s|$)/g,"!").replace(/\bEthan\b/g,"Ethan,").replace(/,,/g,",").replace(/,([!?.])/g,"$1")}
 function talking(on){document.querySelectorAll(".bot").forEach(b=>b.classList.toggle("talk",on))}
 function speakTime(txt){return 500+txt.length*62}
+/* keep a reference to the current line; Safari can drop lines (and never report the end)
+   when the utterance object is cleaned up too early */
+let curUtter=null,speechGen=0;
 function say(txt,bubbleId="gameBubble"){
   const b=$(bubbleId);if(b){b.textContent=txt;b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop")}
   clearTimeout(talkTimer);talking(true);talkTimer=setTimeout(()=>talking(false),speakTime(txt));
-  if(!soundOn)return;
-  try{
-    const s=window.speechSynthesis;if(!s)return;s.cancel();
-    const u=new SpeechSynthesisUtterance(humanize(txt));
-    if(bestVoice){u.voice=bestVoice;u.lang=bestVoice.lang}
-    /* gentle, warm settings; a very high pitch is what sounds robotic */
-    u.rate=/^\d+$/.test(txt)?0.9:0.95;u.pitch=kidVoice?1.0:1.12;u.volume=1;
-    u.onend=()=>{clearTimeout(talkTimer);talking(false)};
-    s.speak(u);
-  }catch(e){}
-}
-/* say a line and wait until Beep finishes it */
-function sayWait(txt,bubbleId){
+  const gen=++speechGen;
   return new Promise(res=>{
-    say(txt,bubbleId);let done=false;const fin=()=>{if(!done){done=true;res()}};
-    setTimeout(fin,speakTime(txt)+(soundOn?900:300));
-    try{if(soundOn&&window.speechSynthesis){const iv=setInterval(()=>{if(!speechSynthesis.speaking){clearInterval(iv);setTimeout(fin,250)}},200);setTimeout(()=>clearInterval(iv),12000)}}catch(e){}
+    if(!soundOn)return res();
+    try{
+      const s=window.speechSynthesis;if(!s)return res();
+      const u=new SpeechSynthesisUtterance(humanize(txt));
+      if(bestVoice){u.voice=bestVoice;u.lang=bestVoice.lang}
+      /* gentle, warm settings; a very high pitch is what sounds robotic */
+      u.rate=/^\d+$/.test(txt)?0.9:0.95;u.pitch=kidVoice?1.0:1.12;u.volume=1;
+      let done=false;const fin=()=>{if(done)return;done=true;if(gen===speechGen){clearTimeout(talkTimer);talking(false)}res()};
+      u.onend=fin;u.onerror=fin;
+      curUtter=u;
+      /* iPad drops a line that is spoken right after cancel(), so give it a moment */
+      if(s.speaking||s.pending){s.cancel();setTimeout(()=>{if(gen===speechGen)s.speak(u);else fin()},120)}
+      else s.speak(u);
+      /* safety net in case a browser never reports the end */
+      setTimeout(fin,speakTime(txt)*1.8+2500);
+    }catch(e){res()}
   });
+}
+/* say a line and wait until Beep finishes it, plus a short natural pause */
+async function sayWait(txt,bubbleId){
+  const t0=Date.now();
+  await say(txt,bubbleId);
+  const min=soundOn?600:speakTime(txt);
+  const spent=Date.now()-t0;if(spent<min)await sleep(min-spent);
+  await sleep(350);
+}
+/* Safari only allows speech that begins inside a tap, so speak a silent word during the tap */
+function primeSpeech(){
+  try{const s=window.speechSynthesis;if(!s)return;const u=new SpeechSynthesisUtterance(" ");u.volume=0;curUtter=u;s.speak(u)}catch(e){}
 }
 function mood(m){const b=$("gameBot");if(!b)return;b.classList.remove("happy","think");void b.offsetWidth;if(m)b.classList.add(m)}
 const word=op=>op==="+"?"plus":"minus";
@@ -848,6 +864,7 @@ function pickGreet(){say(pick(["Pick a game, Ethan!","What should we play, Ethan
 let entering=false;
 async function enter(){
   if(entering||$("tapme").hidden)return;entering=true;
+  primeSpeech();
   const b=$("sleepBot");b.classList.remove("sleep");b.classList.add("waking");
   await unlockAudio();tone(660,.08,"triangle",.15);tone(990,.12,"triangle",.15,.08);
   await sleep(650);
