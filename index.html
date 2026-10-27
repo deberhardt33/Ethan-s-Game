@@ -254,7 +254,29 @@ body{
 @keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
 @keyframes floatUp{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(var(--x),-55vh) rotate(var(--r))}100%{transform:translate(0,-115vh) rotate(0)}}
 .tapme:focus-visible{outline:4px solid var(--ink);outline-offset:-8px}
-/* Beep, Ethan's robot buddy */
+/* egg and buddy picker */
+.bigegg{display:block;line-height:0}
+.bigegg svg{width:clamp(150px,40vw,210px);height:auto;overflow:visible}
+.bigegg.small svg{width:96px}
+.bigegg .egg{transform-box:fill-box;transform-origin:50% 100%;animation:wobble 1.6s ease-in-out infinite}
+.bigegg .egg-top{transform-box:fill-box;transform-origin:20% 100%;transition:transform .5s cubic-bezier(.3,1.4,.5,1),opacity .5s}
+.bigegg.cracked .egg{animation:none}
+.bigegg.cracked .egg-top{transform:translate(-26px,-46px) rotate(-38deg);opacity:0}
+.hatch{gap:16px;overflow-y:auto}
+.hatch-top{display:flex;align-items:center;gap:14px}
+.hatch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:min(560px,100%);opacity:0;pointer-events:none}
+.hatch-grid.show{opacity:1;pointer-events:auto}
+.hatch-grid.show .cr{animation:pop .45s both}
+.cr{border:0;cursor:pointer;background:var(--card);border-radius:24px;padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:0 6px 0 rgba(43,58,85,.22);font-family:var(--display)}
+.cr .bot{--bs:clamp(70px,20vw,104px)}
+.cr:hover .bot .whole,.cr:focus-visible .bot .whole{animation:hop .45s 2}
+.cr:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
+.crname{font-weight:800;font-size:clamp(16px,4vw,20px);color:var(--ink)}
+.eggpick{position:absolute;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 16px);border:0;cursor:pointer;display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:999px;background:#fff;color:var(--ink);font-family:var(--display);font-weight:800;font-size:17px;box-shadow:0 4px 0 rgba(43,58,85,.2)}
+.eggpick span{font-size:22px;display:inline-block;animation:wobble 1.6s ease-in-out infinite}
+.eggpick:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
+@keyframes wobble{0%,60%,100%{transform:rotate(0)}70%{transform:rotate(-8deg)}80%{transform:rotate(7deg)}90%{transform:rotate(-4deg)}}
+/* Ethan's creature buddy */
 .bot{--bs:120px;flex:none;display:inline-block;line-height:0}
 .bot svg{width:var(--bs);height:auto;overflow:visible;display:block}
 .bot .eye{transform-box:fill-box;transform-origin:center;animation:blink 4.5s infinite}
@@ -320,6 +342,7 @@ body{
   <div class="top">
     <button class="iconbtn" id="home" aria-label="Exit to home screen">🏠</button>
     <div class="stars" id="stars" aria-label="Stars earned"></div>
+    <button class="iconbtn eggbtn" aria-label="Get a new buddy">🥚</button>
     <button class="iconbtn" id="restart" aria-label="Start over">↻</button>
     <button class="iconbtn" id="snd" aria-label="Sound on or off">🔊</button>
   </div>
@@ -341,18 +364,15 @@ body{
   <div class="intro-body">
     <div class="name" aria-label="Ethan's"></div>
     <div class="subtitle">Math Adventure</div>
-    <div class="buddy pending" id="introBuddy"><div class="bot" id="introBot" data-bot></div><div class="bubble" id="introBubble" aria-live="polite">Hi Ethan! I'm Beep!</div></div>
+    <div class="buddy pending" id="introBuddy"><div class="bot" id="introBot" data-bot></div><div class="bubble" id="introBubble" aria-live="polite">Hi Ethan!</div></div>
     <button class="big go" id="letsgo" aria-label="Let's go">▶</button>
   </div>
   <div class="floaters" id="floaters" aria-hidden="true"></div>
   <button class="tapme" id="tapme" aria-label="Tap to enter" hidden>
     <span class="welcome">Welcome, Ethan!</span>
-    <span class="sleepy">
-      <span class="bot sleep" id="sleepBot" data-bot></span>
-      <span class="zzz" aria-hidden="true"><i>Z</i><i>z</i><i>z</i></span>
-    </span>
-    <span class="bubble wake">Shh... Beep is sleeping. Tap to wake him up!</span>
-    <span class="tapword"><span class="hand">👆</span>Tap to enter</span>
+    <span class="sleepy"><span class="bigegg" id="tapEgg"></span></span>
+    <span class="bubble wake">Your egg is wiggling! Tap it to see who hatches!</span>
+    <span class="tapword"><span class="hand">👆</span>Tap to hatch</span>
   </button>
 </div>
 <div class="overlay" id="start" hidden>
@@ -362,7 +382,12 @@ body{
     <div class="pick"><button class="big t sub" data-start="sub" aria-label="Play taking away">−</button><span>Taking away</span></div>
     <div class="pick"><button class="big t mix" data-start="mix" aria-label="Play a mix">±</button><span>Mix</span></div>
   </div>
+  <button class="eggbtn eggpick" aria-label="Get a new buddy"><span>🥚</span>New buddy</button>
   <button class="gear" id="gear" aria-label="Parent settings"><span>⚙️</span>Parents</button>
+</div>
+<div class="overlay hatch" id="hatch" hidden>
+  <div class="hatch-top"><span class="bigegg small" id="hatchEgg"></span><div class="bubble" id="hatchBubble">Pick your buddy, Ethan!</div></div>
+  <div class="hatch-grid" id="hatchGrid"></div>
 </div>
 <div class="overlay ready" id="ready" hidden>
   <div class="rsign" id="rsign">+</div>
@@ -474,7 +499,7 @@ function say(txt,bubbleId="gameBubble"){
       const u=new SpeechSynthesisUtterance(humanize(txt));
       if(bestVoice){u.voice=bestVoice;u.lang=bestVoice.lang}
       /* gentle, warm settings; a very high pitch is what sounds robotic */
-      u.rate=/^\d+$/.test(txt)?0.9:0.95;u.pitch=kidVoice?1.0:1.12;u.volume=1;
+      u.rate=/^\d+$/.test(txt)?0.9:0.95;u.pitch=kidVoice?1.0:((BUDDIES[buddy]||{}).pitch||1.12);u.volume=1;
       let done=false;const fin=()=>{if(done)return;done=true;if(gen===speechGen){clearTimeout(talkTimer);talking(false)}res()};
       u.onend=fin;u.onerror=fin;
       curUtter=u;
@@ -486,7 +511,7 @@ function say(txt,bubbleId="gameBubble"){
     }catch(e){res()}
   });
 }
-/* say a line and wait until Beep finishes it, plus a short natural pause */
+/* say a line and wait until the buddy finishes it, plus a short natural pause */
 async function sayWait(txt,bubbleId){
   const t0=Date.now();
   await say(txt,bubbleId);
@@ -728,7 +753,7 @@ function loadSettings(){
     if(Array.isArray(v.counts)&&[2,3].includes(v.counts[0]))counts=[v.counts[0]];
   }catch(e){}
 }
-/* warm up: Beep explains the game with a picture example, then counts down to the first question */
+/* warm up: the buddy explains the game with a picture example, then counts down to the first question */
 let readyRun=0;
 const DEMOS={
   add:{lines:["Yay! Adding time, Ethan!","Adding means putting things together.","Count all the pictures, then tap the right number!"],
@@ -841,18 +866,18 @@ async function showIntro(){
   bud.classList.add("pending");bud.classList.remove("show");
   const wait=await dropName(true);
   await sleep(introSung?Math.max(0,wait-900):1200);if(!alive())return;
-  /* Beep pops up, waves and says hello */
+  /* the new buddy pops up, waves and says hello */
   bud.classList.remove("pending");bud.classList.add("show");
   if(introSung)tone(880,.08,"square",.06);
   bot.classList.remove("wave");void bot.offsetWidth;bot.classList.add("wave");
   await sleep(500);if(!alive())return;
-  await sayWait("Hi Ethan! I'm Beep, your computer friend!","introBubble");if(!alive())return;
+  await sayWait(`Hi Ethan! I'm ${BUDDIES[buddy].name}, your new buddy!`,"introBubble");if(!alive())return;
   await sayWait("Let's have fun and learn math together!","introBubble");if(!alive())return;
   go.style.visibility="";
   say("Tap the green button!","introBubble");
 }
 function pickGreet(){say(pick(["Pick a game, Ethan!","What should we play, Ethan?","Choose a game, buddy!"]),"pickBubble")}
-/* the "tap to enter" screen: Beep naps while numbers float by; one tap wakes him and starts the show */
+/* the "tap to enter" screen: an egg wiggles while numbers float by; one tap hatches it */
 (function(){
   $("intro").querySelector(".intro-body").classList.add("waiting");
   $("tapme").hidden=false;
@@ -867,40 +892,115 @@ let entering=false;
 async function enter(){
   if(entering||$("tapme").hidden)return;entering=true;
   primeSpeech();
-  const b=$("sleepBot");b.classList.remove("sleep");b.classList.add("waking");
-  await unlockAudio();tone(660,.08,"triangle",.15);tone(990,.12,"triangle",.15,.08);
-  await sleep(650);
-  showIntro();
+  await unlockAudio();
+  const egg=$("tapEgg");crackSound();await sleep(650);egg.classList.add("cracked");sparkle();
+  await sleep(500);
+  $("tapme").hidden=true;openHatch("first");
 }
 $("tapme").addEventListener("click",enter);
 window.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" ")enter()});
 $("intro").addEventListener("pointerdown",e=>{if($("tapme").hidden&&e.target.closest(".name"))dropName(true)});
-$("introBot").addEventListener("click",()=>{const b=$("introBot");b.classList.remove("wave");void b.offsetWidth;b.classList.add("wave");say(pick(["Beep boop! Hi Ethan!","You're my best math buddy!","Hee hee, that tickles!"]),"introBubble")});
+$("introBot").addEventListener("click",()=>{const b=$("introBot");b.classList.remove("wave");void b.offsetWidth;b.classList.add("wave");say(pick(["Hi Ethan!","You're my best math buddy!","Hee hee, that tickles!"]),"introBubble")});
 $("letsgo").addEventListener("click",()=>{
   cheer();introRun++;
   $("intro").hidden=true;$("start").hidden=false;pickGreet();
 });
-/* draw Beep everywhere he appears */
-const BOT_SVG=`<svg viewBox="0 0 120 150" aria-hidden="true"><g class="idle"><g class="whole">
-  <line x1="60" y1="10" x2="60" y2="26" stroke="#2b3a55" stroke-width="4" stroke-linecap="round"/>
-  <circle class="light" cx="60" cy="9" r="7" fill="#ffd23f" stroke="#2b3a55" stroke-width="3"/>
-  <rect x="12" y="44" width="12" height="22" rx="6" fill="#1fa596" stroke="#2b3a55" stroke-width="3"/>
-  <rect x="96" y="44" width="12" height="22" rx="6" fill="#1fa596" stroke="#2b3a55" stroke-width="3"/>
-  <rect x="20" y="26" width="80" height="64" rx="20" fill="#35d0bd" stroke="#2b3a55" stroke-width="4"/>
-  <rect x="30" y="36" width="60" height="42" rx="13" fill="#1d2f4f"/>
-  <circle class="eye" cx="47" cy="53" r="6.5" fill="#8bffe8"/>
-  <circle class="eye" cx="73" cy="53" r="6.5" fill="#8bffe8"/>
-  <circle cx="49" cy="51" r="2" fill="#fff"/><circle cx="75" cy="51" r="2" fill="#fff"/>
-  <rect class="mouth" x="51" y="66" width="18" height="4" rx="2" fill="#8bffe8"/>
-  <circle cx="27" cy="74" r="4" fill="#ff9ec4"/><circle cx="93" cy="74" r="4" fill="#ff9ec4"/>
-  <rect class="arm-l" x="16" y="96" width="12" height="32" rx="6" fill="#35d0bd" stroke="#2b3a55" stroke-width="3"/>
-  <rect class="arm-r" x="92" y="96" width="12" height="32" rx="6" fill="#35d0bd" stroke="#2b3a55" stroke-width="3"/>
-  <rect x="30" y="92" width="60" height="44" rx="14" fill="#35d0bd" stroke="#2b3a55" stroke-width="4"/>
-  <rect x="44" y="102" width="32" height="22" rx="7" fill="#fff" stroke="#2b3a55" stroke-width="2.5"/>
-  <text x="60" y="120" text-anchor="middle" font-family="Baloo 2,Comic Sans MS,sans-serif" font-weight="800" font-size="20" fill="#ff8a3d">+</text>
-  <rect x="38" y="136" width="14" height="10" rx="4" fill="#2b3a55"/><rect x="68" y="136" width="14" height="10" rx="4" fill="#2b3a55"/>
+/* Ethan's original creature buddies */
+const INK="#2b3a55";
+const BUDDIES={
+  ember:{name:"Ember",kind:"fire fox",c:"#ff8a3d",belly:"#ffe3c7",pitch:1.15},
+  splash:{name:"Splash",kind:"water turtle",c:"#5ec8ff",belly:"#fff3c4",pitch:1.05},
+  sprout:{name:"Sprout",kind:"leafy bunny",c:"#7ed957",belly:"#f1ffe6",pitch:1.2},
+  twinkle:{name:"Twinkle",kind:"star kitty",c:"#b38cff",belly:"#f4edff",pitch:1.22},
+  puff:{name:"Puff",kind:"cloud puppy",c:"#eef6ff",belly:"#ffffff",pitch:1.12},
+  pebble:{name:"Pebble",kind:"rock bear",c:"#b8916a",belly:"#efdfc9",pitch:.98}
+};
+function creatureSVG(id){
+  const b=BUDDIES[id]||BUDDIES.ember,c=b.c,s=`stroke="${INK}" stroke-width="4" stroke-linejoin="round"`;
+  let back="",ears="",front="";
+  if(id==="ember"){
+    back=`<path d="M92 118 C116 116 120 90 110 74 C108 88 100 92 96 84 C98 100 90 104 86 110 Z" fill="#ffd23f" ${s}/>
+          <path d="M94 114 C108 110 110 96 106 88 C102 98 96 98 94 94 Z" fill="#ff5a3d"/>`;
+    ears=`<path d="M28 58 L30 20 L54 44 Z" fill="${c}" ${s}/><path d="M92 58 L90 20 L66 44 Z" fill="${c}" ${s}/>
+          <path d="M33 48 L34 30 L46 42 Z" fill="#ffe3c7"/><path d="M87 48 L86 30 L74 42 Z" fill="#ffe3c7"/>`;
+  }else if(id==="splash"){
+    back=`<ellipse cx="60" cy="100" rx="50" ry="42" fill="#2e86d4" ${s}/>
+          <circle cx="22" cy="96" r="7" fill="#7cc2ff"/><circle cx="98" cy="96" r="7" fill="#7cc2ff"/><circle cx="28" cy="122" r="6" fill="#7cc2ff"/><circle cx="92" cy="122" r="6" fill="#7cc2ff"/>`;
+    front=`<path d="M60 22 C54 32 52 38 56 42 C59 45 63 44 64 40 C66 35 62 30 60 22 Z" fill="#9fe0ff" stroke="${INK}" stroke-width="3"/>`;
+  }else if(id==="sprout"){
+    ears=`<rect x="30" y="6" width="18" height="52" rx="9" fill="${c}" ${s} transform="rotate(-10 39 40)"/><rect x="72" y="6" width="18" height="52" rx="9" fill="${c}" ${s} transform="rotate(10 81 40)"/>
+          <rect x="35" y="14" width="8" height="34" rx="4" fill="#ffc2d6" transform="rotate(-10 39 40)"/><rect x="77" y="14" width="8" height="34" rx="4" fill="#ffc2d6" transform="rotate(10 81 40)"/>`;
+    front=`<path d="M60 46 C60 38 62 32 66 28" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>
+           <path d="M66 28 C76 22 84 26 84 30 C78 36 70 34 66 28 Z" fill="#3fb34f" stroke="${INK}" stroke-width="3"/>`;
+    back=`<circle cx="98" cy="118" r="10" fill="#fff" ${s}/>`;
+  }else if(id==="twinkle"){
+    back=`<path d="M92 120 C112 120 116 100 106 94 C100 90 94 96 100 102" fill="none" stroke="${INK}" stroke-width="12" stroke-linecap="round"/>
+          <path d="M92 120 C112 120 116 100 106 94 C100 90 94 96 100 102" fill="none" stroke="${c}" stroke-width="6" stroke-linecap="round"/>`;
+    ears=`<path d="M26 60 L30 30 L50 48 Z" fill="${c}" ${s}/><path d="M94 60 L90 30 L70 48 Z" fill="${c}" ${s}/>
+          <path d="M32 52 L34 38 L44 47 Z" fill="#ffc2e6"/><path d="M88 52 L86 38 L76 47 Z" fill="#ffc2e6"/>`;
+    front=`<path d="M60 52 L63 59 L70 59 L64.5 63.5 L66.5 70.5 L60 66.5 L53.5 70.5 L55.5 63.5 L50 59 L57 59 Z" fill="#ffd23f" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>`;
+  }else if(id==="puff"){
+    ears=`<ellipse cx="24" cy="78" rx="11" ry="22" fill="#b9d6f2" ${s} transform="rotate(18 24 78)"/><ellipse cx="96" cy="78" rx="11" ry="22" fill="#b9d6f2" ${s} transform="rotate(-18 96 78)"/>`;
+    back=`<circle cx="36" cy="52" r="14" fill="${c}" ${s}/><circle cx="60" cy="44" r="17" fill="${c}" ${s}/><circle cx="84" cy="52" r="14" fill="${c}" ${s}/>`;
+  }else if(id==="pebble"){
+    ears=`<circle cx="30" cy="50" r="14" fill="${c}" ${s}/><circle cx="90" cy="50" r="14" fill="${c}" ${s}/>
+          <circle cx="30" cy="50" r="6" fill="#efdfc9"/><circle cx="90" cy="50" r="6" fill="#efdfc9"/>`;
+    front=`<ellipse cx="38" cy="68" rx="5" ry="3.5" fill="#8f6c4b"/><ellipse cx="86" cy="112" rx="4" ry="3" fill="#8f6c4b"/><ellipse cx="80" cy="64" rx="3.5" ry="2.5" fill="#8f6c4b"/>`;
+  }
+  return `<svg viewBox="0 0 120 150" aria-hidden="true"><g class="idle"><g class="whole">
+  ${back}${ears}
+  <rect class="arm-l" x="12" y="90" width="16" height="26" rx="8" fill="${c}" ${s}/>
+  <rect class="arm-r" x="92" y="90" width="16" height="26" rx="8" fill="${c}" ${s}/>
+  <ellipse cx="42" cy="138" rx="13" ry="8" fill="${c}" ${s}/><ellipse cx="78" cy="138" rx="13" ry="8" fill="${c}" ${s}/>
+  <ellipse cx="60" cy="92" rx="40" ry="45" fill="${c}" ${s}/>
+  <ellipse cx="60" cy="110" rx="24" ry="22" fill="${b.belly}"/>
+  ${front}
+  <ellipse class="eye" cx="46" cy="82" rx="6" ry="8" fill="${INK}"/><ellipse class="eye" cx="74" cy="82" rx="6" ry="8" fill="${INK}"/>
+  <circle cx="48" cy="79" r="2.4" fill="#fff"/><circle cx="76" cy="79" r="2.4" fill="#fff"/>
+  <ellipse cx="34" cy="94" rx="6" ry="4" fill="#ff8fb6" opacity=".75"/><ellipse cx="86" cy="94" rx="6" ry="4" fill="#ff8fb6" opacity=".75"/>
+  <path d="M53 94 Q60 100 67 94" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>
+  <ellipse class="mouth" cx="60" cy="98" rx="4" ry="1.6" fill="#8a2f3a"/>
 </g></g></svg>`;
-document.querySelectorAll("[data-bot]").forEach(el=>el.innerHTML=BOT_SVG);
+}
+const EGG_SVG=`<svg viewBox="0 0 120 150" aria-hidden="true"><g class="egg">
+  <path class="egg-bot" d="M16 86 L24 92 L34 80 L44 92 L54 80 L64 92 L74 80 L84 92 L94 80 L104 86 C104 120 86 140 60 140 C34 140 16 120 16 86 Z" fill="#fff8e6" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>
+  <g class="egg-top">
+    <path d="M16 86 C16 40 38 14 60 14 C82 14 104 40 104 86 L94 80 L84 92 L74 80 L64 92 L54 80 L44 92 L34 80 L24 92 Z" fill="#fff8e6" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="44" cy="46" r="9" fill="#ff8a3d"/><circle cx="76" cy="38" r="7" fill="#29a8ff"/><circle cx="80" cy="66" r="9" fill="#7ed957"/><circle cx="40" cy="72" r="6" fill="#b38cff"/>
+  </g>
+  <circle cx="34" cy="116" r="7" fill="#ffd23f"/><circle cx="86" cy="112" r="6" fill="#ff8fb6"/><circle cx="60" cy="126" r="5" fill="#29a8ff"/>
+</g></svg>`;
+
+let buddy="ember";
+function renderBuddies(){document.querySelectorAll("[data-bot]").forEach(el=>el.innerHTML=creatureSVG(buddy))}
+/* buddy picker: shown after the egg hatches on every visit, and anytime from the egg button */
+let hatchMode="first",hatchReturn=null;
+$("hatchGrid").innerHTML=Object.keys(BUDDIES).map((k,i)=>`<button class="cr" data-cr="${k}" style="animation-delay:${i*90}ms" aria-label="${BUDDIES[k].name} the ${BUDDIES[k].kind}"><span class="bot">${creatureSVG(k)}</span><span class="crname">${BUDDIES[k].name}</span></button>`).join("");
+async function openHatch(mode){
+  hatchMode=mode;hush();
+  hatchReturn=mode==="switch"?(!$("start").hidden?"start":"game"):null;
+  const egg=$("hatchEgg");egg.innerHTML=EGG_SVG;egg.classList.remove("cracked");
+  $("hatchGrid").classList.remove("show");$("hatch").hidden=false;
+  say(mode==="first"?"Your egg is hatching!":"A new egg! Let's see who's inside!","hatchBubble");
+  crackSound();await sleep(700);egg.classList.add("cracked");sparkle();
+  await sleep(500);$("hatchGrid").classList.add("show");
+  say("Pick your buddy, Ethan!","hatchBubble");
+}
+function crackSound(){tone(1200,.05,"square",.06);tone(900,.05,"square",.06,.18);tone(1400,.06,"square",.06,.4);tone(700,.25,"triangle",.14,.62)}
+function sparkle(){[1047,1319,1568,2093].forEach((f,i)=>tone(f,.12,"sine",.12,i*.07))}
+$("hatchGrid").addEventListener("click",e=>{
+  const b=e.target.closest(".cr");if(!b)return;
+  buddy=b.dataset.cr;renderBuddies();sparkle();confetti();
+  $("hatch").hidden=true;
+  const n=BUDDIES[buddy].name;
+  if(hatchMode==="first"){showIntro();return}
+  const where=hatchReturn==="start"?"pickBubble":"gameBubble";
+  const bot=hatchReturn==="start"?$("pickBot"):$("gameBot");
+  bot.classList.remove("wave");void bot.offsetWidth;bot.classList.add("wave");
+  say(`Hi Ethan! I'm ${n}! Let's keep going!`,where);
+});
+document.querySelectorAll(".eggbtn").forEach(b=>b.addEventListener("click",()=>{primeSpeech();openHatch("switch")}));
+renderBuddies();$("tapEgg").innerHTML=EGG_SVG;
 
 loadSettings();setDigits(digits);showCounts();showGames();renderStars();cur=make();renderProblem();
 </script>
