@@ -197,6 +197,16 @@ body{
 .lvl[aria-pressed="true"] b{background:#fff;color:var(--good)}
 .lvl[aria-pressed="true"] em{color:#e6fff0}
 .lvl:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
+.ready .rsign{font-weight:800;font-size:clamp(70px,20vw,120px);line-height:1;color:#fff;-webkit-text-stroke:4px var(--ink);paint-order:stroke fill;animation:pop .5s both}
+.ready .rsign.add{color:var(--ga)}.ready .rsign.sub{color:var(--gb)}.ready .rsign.mix{color:#8a5cff}
+#readyBuddy .bot{--bs:110px}
+.demo{display:flex;align-items:center;gap:8px;font-size:clamp(30px,8vw,46px);font-weight:800;color:var(--ink);background:#fff;border-radius:22px;padding:8px 18px;box-shadow:0 5px 0 rgba(43,58,85,.18);min-height:1.4em;flex-wrap:wrap;justify-content:center}
+.demo:empty{visibility:hidden}
+.demo>*{animation:pop .35s both}
+.countdown{font-weight:800;font-size:clamp(90px,26vw,150px);line-height:1;color:var(--good);-webkit-text-stroke:4px #fff;paint-order:stroke fill;text-shadow:0 6px 0 rgba(43,58,85,.2)}
+.countdown.tick{animation:pop .45s both}
+.skip{border:0;cursor:pointer;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.7);color:var(--ink);font-size:26px;box-shadow:0 4px 0 rgba(43,58,85,.2)}
+.skip:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
 .done{border:0;cursor:pointer;height:60px;padding:0 34px;border-radius:999px;background:var(--good);color:#fff;font-family:var(--display);font-weight:800;font-size:24px;box-shadow:0 6px 0 #167a3a}
 .overlay .back{width:56px;height:56px;font-size:24px;color:var(--ink)}
 #setup{gap:14px;overflow-y:auto}
@@ -351,6 +361,13 @@ body{
     <div class="pick"><button class="big t mix" data-start="mix" aria-label="Play a mix">±</button><span>Mix</span></div>
   </div>
   <button class="gear" id="gear" aria-label="Parent settings"><span>⚙️</span>Parents</button>
+</div>
+<div class="overlay ready" id="ready" hidden>
+  <div class="rsign" id="rsign">+</div>
+  <div class="buddy" id="readyBuddy"><div class="bot" id="readyBot" data-bot></div><div class="bubble" id="readyBubble">Yay!</div></div>
+  <div class="demo" id="demo" aria-hidden="true"></div>
+  <div class="countdown" id="countdown" hidden></div>
+  <button class="skip" id="skipReady" aria-label="Start now">▶</button>
 </div>
 <div class="overlay" id="gate" hidden>
   <div class="gate-card">
@@ -637,7 +654,7 @@ document.querySelectorAll("[data-c]").forEach(b=>b.addEventListener("click",()=>
 document.querySelectorAll("[data-lv]").forEach(b=>b.addEventListener("click",()=>{setDigits(+b.dataset.lv);tone(700,.08);saveSettings()}));
 /* Ethan just picks a game and plays; size and count come from the parent settings */
 document.querySelectorAll("[data-start]").forEach(b=>b.addEventListener("click",()=>{
-  setType(b.dataset.start);$("start").hidden=true;tone(660,.1);newProblem();
+  setType(b.dataset.start);$("start").hidden=true;tone(660,.1);warmUp();
 }));
 /* pick either 2 or 3 numbers, never both */
 let counts=[2];
@@ -666,6 +683,39 @@ function loadSettings(){
     if(Array.isArray(v.counts)&&[2,3].includes(v.counts[0]))counts=[v.counts[0]];
   }catch(e){}
 }
+/* warm up: Beep explains the game with a picture example, then counts down to the first question */
+let readyRun=0;
+const DEMOS={
+  add:{lines:["Yay! Adding time, Ethan!","Adding means putting things together.","Count all the pictures, then tap the right number!"],
+       steps:["🍎🍎","+","🍎","=","🍎🍎🍎"]},
+  sub:{lines:["Yay! Taking away time, Ethan!","Taking away means some go bye bye.","Count what is left, then tap the right number!"],
+       steps:["🍎🍎🍎","−","🍎","=","🍎🍎"]},
+  mix:{lines:["Ooh, a mix, Ethan!","Plus means put together. Minus means take away.","Look at the sign, then tap the right number!"],
+       steps:["🍎+🍎","then","🍎🍎−🍎"]}
+};
+async function warmUp(){
+  const my=++readyRun,alive=()=>my===readyRun&&!$("ready").hidden;
+  const d=DEMOS[type],sign=$("rsign"),demo=$("demo"),cd=$("countdown"),bot=$("readyBot");
+  sign.textContent={add:"+",sub:"−",mix:"±"}[type];sign.className="rsign "+type;
+  demo.innerHTML="";cd.hidden=true;$("readyBuddy").hidden=false;$("ready").hidden=false;
+  bot.classList.remove("wave");void bot.offsetWidth;bot.classList.add("wave");
+  await sayWait(d.lines[0],"readyBubble");if(!alive())return;
+  /* build the picture example one piece at a time */
+  const said=sayWait(d.lines[1],"readyBubble");
+  for(const part of d.steps){const el=document.createElement("span");el.textContent=part;if(part.length<=4&&!/[🍎]/u.test(part))el.style.color=part==="−"?"var(--gb)":"#8a5cff";demo.appendChild(el);tone(520+demo.children.length*60,.08,"triangle",.12);await sleep(450);if(!alive())return}
+  await said;if(!alive())return;
+  await sayWait(d.lines[2],"readyBubble");if(!alive())return;
+  await sayWait("Ready? Here we go!","readyBubble");if(!alive())return;
+  demo.innerHTML="";$("readyBuddy").hidden=true;cd.hidden=false;
+  for(const n of ["3","2","1","Go!"]){
+    cd.textContent=n;cd.classList.remove("tick");void cd.offsetWidth;cd.classList.add("tick");
+    tone(n==="Go!"?880:520,n==="Go!"?.3:.12,"triangle",.18);say(n,"readyBubble");
+    await sleep(800);if(!alive())return;
+  }
+  finishWarmUp();
+}
+function finishWarmUp(){readyRun++;$("ready").hidden=true;newProblem()}
+$("skipReady").addEventListener("click",()=>{hush();finishWarmUp()});
 /* one simple level choice sets number size and how many numbers */
 const LEVELS={1:[1,2],2:[1,3],3:[2,2],4:[2,3]};
 function currentLevel(){return +Object.keys(LEVELS).find(k=>LEVELS[k][0]===digits&&LEVELS[k][1]===counts[0])||1}
