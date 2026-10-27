@@ -197,9 +197,29 @@ body{
 .intro-body{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:14px}
 .intro-body.waiting{visibility:hidden}
 .big.go.later{animation:pop .5s both,pulse 1.2s .5s infinite}
-.tapme{position:absolute;inset:0;z-index:3;border:0;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-family:var(--display)}
-.tapme .hand{font-size:clamp(90px,26vw,150px);line-height:1;animation:tap 1s ease-in-out infinite;filter:drop-shadow(0 8px 0 rgba(43,58,85,.2))}
-.tapme .tapword{font-weight:800;font-size:clamp(34px,9vw,52px);color:var(--ink);background:#fff;padding:4px 28px;border-radius:999px;box-shadow:0 5px 0 rgba(43,58,85,.2);animation:pulse 1.2s infinite}
+.tapme{position:absolute;inset:0;z-index:3;border:0;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:var(--display);color:var(--ink);padding:20px}
+.tapme>span{display:flex}
+.tapme .welcome{font-weight:800;font-size:clamp(38px,10vw,64px);color:#fff;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 5px 0 rgba(43,58,85,.25);animation:sway 2.4s ease-in-out infinite}
+.tapme .sleepy{position:relative;align-items:flex-end}
+.tapme .sleepy .bot{--bs:clamp(130px,34vw,180px)}
+.tapme .bubble.wake{font-size:clamp(18px,4.8vw,24px);max-width:16em;text-align:center}
+.tapme .bubble.wake::before{left:50%;top:-14px;margin:0 0 0 -10px;border:10px solid transparent;border-bottom:14px solid #fff;border-top:0}
+.tapme .tapword{align-items:center;gap:8px;font-weight:800;font-size:clamp(28px,7.5vw,42px);color:#fff;background:var(--good);padding:8px 30px;border-radius:999px;box-shadow:0 6px 0 #167a3a;animation:pulse 1.2s infinite}
+.tapme .hand{font-size:1.3em;line-height:1;display:inline-block;animation:tap 1s ease-in-out infinite}
+.zzz{position:absolute;right:-34px;top:0;width:60px;height:100px;pointer-events:none}
+.zzz i{position:absolute;left:0;bottom:30px;font-style:normal;font-weight:800;color:#fff;-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;opacity:0;animation:zz 3s infinite}
+.zzz i:nth-child(1){font-size:30px}.zzz i:nth-child(2){font-size:24px;animation-delay:1s}.zzz i:nth-child(3){font-size:18px;animation-delay:2s}
+.bot.sleep .eye{animation:none;transform:scaleY(.12)}
+.bot.sleep .light{animation:none;fill:#b7c1d3}
+.bot.sleep .idle{animation:breathe 2.6s ease-in-out infinite}
+.bot.sleep .whole{transform:rotate(-6deg)}
+.bot.waking .whole{animation:hop .4s 2}
+.floaters{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.floaters span{position:absolute;bottom:-80px;font-weight:800;color:var(--c);-webkit-text-stroke:2px #fff;paint-order:stroke fill;animation:floatUp var(--d) linear infinite;animation-delay:var(--dl);opacity:.9}
+@keyframes zz{0%{transform:translate(0,0);opacity:0}20%{opacity:1}100%{transform:translate(26px,-70px);opacity:0}}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03,.98)}}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes floatUp{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(var(--x),-55vh) rotate(var(--r))}100%{transform:translate(0,-115vh) rotate(0)}}
 .tapme:focus-visible{outline:4px solid var(--ink);outline-offset:-8px}
 /* Beep, Ethan's robot buddy */
 .bot{--bs:120px;flex:none;display:inline-block;line-height:0}
@@ -291,7 +311,16 @@ body{
     <div class="buddy pending" id="introBuddy"><div class="bot" id="introBot" data-bot></div><div class="bubble" id="introBubble" aria-live="polite">Hi Ethan! I'm Beep!</div></div>
     <button class="big go" id="letsgo" aria-label="Let's go">▶</button>
   </div>
-  <button class="tapme" id="tapme" aria-label="Tap to start" hidden><span class="hand">👆</span><span class="tapword">Tap!</span></button>
+  <div class="floaters" id="floaters" aria-hidden="true"></div>
+  <button class="tapme" id="tapme" aria-label="Tap to enter" hidden>
+    <span class="welcome">Welcome, Ethan!</span>
+    <span class="sleepy">
+      <span class="bot sleep" id="sleepBot" data-bot></span>
+      <span class="zzz" aria-hidden="true"><i>Z</i><i>z</i><i>z</i></span>
+    </span>
+    <span class="bubble wake">Shh... Beep is sleeping. Tap to wake him up!</span>
+    <span class="tapword"><span class="hand">👆</span>Tap to enter</span>
+  </button>
 </div>
 <div class="overlay" id="start" hidden>
   <div class="buddy" id="pickBuddy"><div class="bot" id="pickBot" data-bot></div><div class="bubble" id="pickBubble">Pick a game, Ethan!</div></div>
@@ -667,14 +696,27 @@ async function showIntro(){
   say("Tap the green button!","introBubble");
 }
 function pickGreet(){say(pick(["Pick a game, Ethan!","What should we play, Ethan?","Choose a game, buddy!"]),"pickBubble")}
-(async()=>{
-  const ok=soundOn&&await unlockAudio();
-  if(ok){showIntro();return}
+/* the "tap to enter" screen: Beep naps while numbers float by; one tap wakes him and starts the show */
+(function(){
   $("intro").querySelector(".intro-body").classList.add("waiting");
   $("tapme").hidden=false;
+  const f=$("floaters"),items=["1","2","3","4","5","6","7","8","9","10","+","−","=","⭐","🎈"],cols=["#ff8a3d","#29a8ff","#a55cff","#22a852","#ec4545","#ffb400","#ff5fa2"];
+  let h="";
+  for(let i=0;i<16;i++){
+    h+=`<span style="left:${Math.round(i*6.2+Math.random()*4)}%;font-size:${28+Math.round(Math.random()*30)}px;--c:${pick(cols)};--d:${9+Math.random()*7}s;--dl:${-Math.random()*14}s;--x:${Math.round(Math.random()*60-30)}px;--r:${Math.round(Math.random()*40-20)}deg">${pick(items)}</span>`;
+  }
+  f.innerHTML=h;
 })();
-$("tapme").addEventListener("click",()=>showIntro());
-window.addEventListener("keydown",()=>{if(!$("tapme").hidden)showIntro()},{once:true});
+let entering=false;
+async function enter(){
+  if(entering||$("tapme").hidden)return;entering=true;
+  const b=$("sleepBot");b.classList.remove("sleep");b.classList.add("waking");
+  await unlockAudio();tone(660,.08,"triangle",.15);tone(990,.12,"triangle",.15,.08);
+  await sleep(650);
+  showIntro();
+}
+$("tapme").addEventListener("click",enter);
+window.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" ")enter()});
 $("intro").addEventListener("pointerdown",e=>{if($("tapme").hidden&&e.target.closest(".name"))dropName(true)});
 $("introBot").addEventListener("click",()=>{const b=$("introBot");b.classList.remove("wave");void b.offsetWidth;b.classList.add("wave");say(pick(["Beep boop! Hi Ethan!","You're my best math buddy!","Hee hee, that tickles!"]),"introBubble")});
 $("letsgo").addEventListener("click",()=>{
