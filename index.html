@@ -81,6 +81,7 @@ body{
 .dots i{width:10px;height:10px;border-radius:50%;background:var(--ink);opacity:.75}
 .ch.wrong{background:var(--bad)!important;color:#fff;animation:shake .45s}
 .ch.wrong .dots i{background:#fff}
+.ch.out{opacity:.35;filter:grayscale(.6);cursor:default;box-shadow:none;transform:scale(.92)}
 .ch.right{background:var(--good)!important;color:#fff;animation:pop .4s}
 .ch.right .dots i{background:#fff}
 
@@ -439,7 +440,7 @@ body{
 <script>
 const EMO=["🍎","🐶","⭐","🐟","🍪","🦆","🚗","🐸","🍓","🎈","🐞","🍌","🐱","🧁"];
 const GOAL=10;
-let type="mix",howMany=2,digits=1,score=0,cur=null,busy=false,soundOn=true,lastKey="",run=0,helped=false;
+let type="mix",howMany=2,digits=1,score=0,cur=null,busy=false,soundOn=true,lastKey="",run=0,helped=false,tries=0;
 const $=id=>document.getElementById(id);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const rand=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -602,13 +603,13 @@ function showChoices(){
   ch.innerHTML=options(cur.ans,cur.big).map(v=>`<button class="ch" data-v="${v}" aria-label="${v}"><span class="d">${v}</span>${dots(v)}</button>`).join("");
 }
 function newProblem(){
-  run++;busy=false;helped=false;cur=make();renderProblem();
+  run++;busy=false;helped=false;tries=0;cur=make();renderProblem();
   $("explain").hidden=true;$("explain").innerHTML="";
   showChoices();$("helpB").hidden=false;mood(null);
   say(`What is ${cur.nums.join(` ${word(cur.op)} `)}?`);
 }
 $("choices").addEventListener("click",async e=>{
-  const btn=e.target.closest(".ch");if(!btn||busy)return;
+  const btn=e.target.closest(".ch");if(!btn||busy||btn.disabled)return;
   busy=true;const v=+btn.dataset.v,my=run;
   if(v===cur.ans){
     btn.classList.add("right");fillSlot();cheer();confetti();$("helpB").hidden=true;mood("happy");
@@ -618,6 +619,14 @@ $("choices").addEventListener("click",async e=>{
     if(score>=GOAL){$("win").hidden=false;cheer();confetti();say("You did it, Ethan! Ten stars!")}else newProblem();
   }else{
     btn.classList.add("wrong");boop();mood("think");
+    tries++;
+    if(tries<2){
+      /* first miss: that choice is out, and he gets one more try */
+      await sleep(500);if(my!==run)return;
+      btn.disabled=true;btn.classList.add("out");
+      say(pick(["Oops! Try one more time, Ethan!","Almost! Give it another try!","So close! Try again, buddy!"]));
+      mood(null);busy=false;return;
+    }
     await sleep(700);if(my!==run)return;walk(v);
   }
 });
