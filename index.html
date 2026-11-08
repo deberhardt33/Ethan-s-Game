@@ -9,9 +9,9 @@ body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 img{max-width:100%}
 [hidden]{display:none!important}
 </style>
-<title>Ethan&#39;s Math Game</title>
-<meta name="apple-mobile-web-app-title" content="Ethan&#39;s Math">
-<meta name="application-name" content="Ethan&#39;s Math">
+<title>Ethan&#39;s Learning Game</title>
+<meta name="apple-mobile-web-app-title" content="Ethan&#39;s Learning">
+<meta name="application-name" content="Ethan&#39;s Learning">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
 <style>
@@ -183,6 +183,7 @@ body{
   padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.55);color:#53627d;font-family:var(--display);font-weight:800;font-size:15px}
 .gear span{font-size:18px}
 .gear i{font-style:normal;font-weight:600}
+@media (max-width:480px){.gear i{display:none}}
 .lvtag{font-size:12px;font-weight:600;color:rgba(43,58,85,.45);letter-spacing:.04em;font-family:system-ui,sans-serif;font-variant-numeric:tabular-nums;margin-top:-4px}
 .gear:focus-visible,.done:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
 .gate-card{background:var(--card);color:var(--ink);border-radius:24px;padding:22px 20px;max-width:360px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:12px;box-shadow:0 8px 0 rgba(43,58,85,.18)}
@@ -257,6 +258,90 @@ body{
 @keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
 @keyframes floatUp{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(var(--x),-55vh) rotate(var(--r))}100%{transform:translate(0,-115vh) rotate(0)}}
 .tapme:focus-visible{outline:4px solid var(--ink);outline-offset:-8px}
+/* mission picker */
+.missions{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.mission{border:0;cursor:pointer;width:clamp(150px,40vw,220px);max-width:100%;aspect-ratio:1/1.05;border-radius:32px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  font-family:var(--display);color:#fff;box-shadow:0 8px 0 var(--sh);animation:pop .5s both}
+.mission:nth-child(2){animation-delay:.12s}
+.mission:active{transform:translateY(5px);box-shadow:0 3px 0 var(--sh)}
+.mission:focus-visible{outline:4px solid var(--ink);outline-offset:4px}
+.m-math{background:var(--ga);--sh:#c45a17}
+.m-es{background:linear-gradient(160deg,#ff5a5a,#ff9a3d);--sh:#b8362b}
+.mpic{font-weight:800;font-size:clamp(36px,10vw,58px);line-height:1;background:#fff;color:var(--ink);padding:12px 18px;border-radius:22px;box-shadow:0 4px 0 rgba(0,0,0,.12)}
+.m-es .mpic{color:#e8443a}
+.mname{font-weight:800;font-size:clamp(24px,6vw,34px);text-shadow:0 2px 0 rgba(0,0,0,.15)}
+.backbtn{position:absolute;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 16px);border:0;cursor:pointer;width:58px;height:58px;border-radius:50%;
+  background:#fff;color:var(--ink);font-size:24px;box-shadow:0 4px 0 rgba(43,58,85,.2)}
+.backbtn:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
+#start,#mathPick,#esSet,#es{background:linear-gradient(180deg,var(--sky) 0%,var(--sky2) 62%,var(--grass) 62%,var(--grass2) 100%)}
+/* spanish setup */
+.es-set{gap:18px}
+.es-crumbs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;min-height:34px}
+.es-crumbs span{background:#fff;color:var(--ink);font-weight:800;font-size:17px;padding:5px 14px;border-radius:999px;box-shadow:0 3px 0 rgba(43,58,85,.15);animation:pop .3s both}
+.es-opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:min(560px,100%)}
+.es-opt{border:0;cursor:pointer;background:var(--card);border-radius:24px;padding:16px 6px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 6px 0 rgba(43,58,85,.22);font-family:var(--display);color:var(--ink);animation:pop .4s both}
+.es-opt:nth-child(2){animation-delay:.08s}.es-opt:nth-child(3){animation-delay:.16s}
+.es-opt:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(43,58,85,.22)}
+.es-opt:focus-visible,.es-num:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
+.es-opt .ico{font-size:clamp(44px,12vw,66px);line-height:1.1}
+.es-opt .lab{font-weight:800;font-size:clamp(18px,4.8vw,24px)}
+.es-opt .hint{font-size:13px;font-weight:600;color:#6b7891;font-family:system-ui,sans-serif}
+.es-nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;width:min(520px,100%)}
+.es-num{border:0;cursor:pointer;aspect-ratio:1;max-width:100%;border-radius:50%;font-family:var(--display);font-weight:800;font-size:clamp(30px,8vw,46px);color:#fff;animation:pop .4s both}
+.es-num:nth-child(1){background:var(--good);box-shadow:0 6px 0 #167a3a}
+.es-num:nth-child(2){background:var(--gb);box-shadow:0 6px 0 #157bbd;animation-delay:.08s}
+.es-num:nth-child(3){background:#8a5cff;box-shadow:0 6px 0 #5a35c9;animation-delay:.16s}
+.es-num:nth-child(4){background:var(--ga);box-shadow:0 6px 0 #c45a17;animation-delay:.24s}
+/* spanish practice */
+.es-play{justify-content:flex-start;overflow-y:auto;gap:12px}
+.es-top{width:100%;max-width:640px;display:flex;align-items:center;gap:10px}
+.es-top .iconbtn{flex:none;color:var(--ink)}
+.es-prog{flex:1;display:flex;flex-wrap:wrap;gap:5px;justify-content:center;min-width:0}
+.es-prog i{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.65);transition:transform .3s,background .3s}
+.es-prog i.ok{background:var(--good)}
+.es-prog i.now{background:var(--sun);transform:scale(1.4)}
+.es-count{flex:none;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;font-size:18px;background:#fff;padding:5px 12px;border-radius:999px}
+.es-card{width:100%;max-width:640px;box-sizing:border-box;background:var(--card);border-radius:28px;padding:20px 16px 24px;display:flex;flex-direction:column;align-items:center;gap:16px;
+  box-shadow:0 8px 0 rgba(43,58,85,.18),0 18px 40px rgba(43,58,85,.15)}
+.es-card.in{animation:pop .45s both}
+.es-pic{font-size:clamp(90px,26vw,150px);line-height:1.05;animation:float 3s ease-in-out infinite}
+.es-card.fluent .es-pic{font-size:clamp(56px,15vw,86px)}
+.es-en{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;min-width:0;max-width:100%}
+.tag{font-family:system-ui,sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6b7891;background:var(--soft);padding:3px 8px;border-radius:6px}
+#esEn{font-weight:800;font-size:clamp(30px,8vw,46px);color:var(--ink);line-height:1.15;text-wrap:balance;min-width:0}
+.es-card.medium #esEn{font-size:clamp(26px,6.6vw,38px)}
+.es-card.fluent #esEn{font-size:clamp(20px,5vw,28px);max-width:22em}
+.es-hear{border:0;cursor:pointer;background:var(--soft);border-radius:50%;width:46px;height:46px;font-size:22px;flex:none}
+.es-hear:focus-visible,.es-reveal:focus-visible,.es-btn:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
+.es-think{display:flex;align-items:center;gap:10px;width:min(360px,100%)}
+.es-think .hmm{font-size:36px;display:inline-block;animation:wobble 1.6s ease-in-out infinite}
+.es-bar{flex:1;height:16px;border-radius:999px;background:var(--soft);overflow:hidden}
+.es-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sun),var(--ga));border-radius:inherit}
+.es-reveal{border:0;cursor:pointer;display:flex;align-items:center;gap:10px;background:var(--good);color:#fff;font-family:var(--display);font-weight:800;font-size:clamp(22px,6vw,30px);
+  padding:14px 30px;border-radius:999px;box-shadow:0 7px 0 #167a3a;animation:pop .4s both,pulse 1.2s .4s infinite}
+.es-reveal .ear{font-size:1.3em;line-height:1}
+.es-ans{display:flex;flex-direction:column;align-items:center;gap:6px;animation:flipIn .55s both;max-width:100%}
+.es-word{font-weight:800;font-size:clamp(42px,11vw,68px);color:#e8443a;line-height:1.1;text-wrap:balance}
+.es-card.medium .es-word{font-size:clamp(32px,8.6vw,52px)}
+.es-card.fluent .es-word{font-size:clamp(24px,6.4vw,36px);max-width:20em}
+.es-word.speaking{animation:pulse .9s ease-in-out infinite}
+.es-say{font-weight:800;font-size:clamp(20px,5vw,24px);color:#6b3fe0;background:#f3e9ff;padding:8px 20px;border-radius:999px;animation:pop .4s both}
+.es-say .mic{display:inline-block;animation:hop .6s infinite}
+.es-nextrow{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;animation:pop .4s both}
+.es-btn{border:0;cursor:pointer;font-family:var(--display);font-weight:800;font-size:clamp(20px,5vw,26px);padding:12px 26px;border-radius:999px;display:flex;align-items:center;gap:8px}
+.es-btn.again{background:#fff;color:var(--ink);box-shadow:0 6px 0 rgba(43,58,85,.25),inset 0 0 0 3px var(--soft)}
+.es-btn.next{background:var(--gb);color:#fff;box-shadow:0 6px 0 #157bbd}
+.es-btn:active{transform:translateY(4px)}
+.es-btn[disabled]{opacity:.5}
+.es-done{width:100%;max-width:640px;box-sizing:border-box;background:var(--card);border-radius:28px;padding:22px 16px 26px;display:flex;flex-direction:column;align-items:center;gap:12px;animation:pop .5s both;
+  box-shadow:0 8px 0 rgba(43,58,85,.18)}
+.es-done .trophy{font-size:clamp(70px,20vw,110px);line-height:1;animation:hop 1.4s infinite}
+.es-done-title{font-weight:800;font-size:clamp(30px,8vw,44px);color:#e8443a}
+.es-done-sub{font-weight:800;font-size:clamp(18px,4.8vw,24px);color:var(--ink)}
+.es-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:100%}
+.es-chips button{border:0;cursor:pointer;font-family:var(--display);font-weight:800;font-size:17px;color:var(--ink);background:#fff3e6;padding:6px 14px;border-radius:999px;box-shadow:0 3px 0 rgba(43,58,85,.15);max-width:100%;text-align:center}
+.big.homebig{background:var(--gb);box-shadow:0 7px 0 #157bbd;animation:none}
+@keyframes flipIn{0%{transform:perspective(600px) rotateX(90deg);opacity:0}100%{transform:none;opacity:1}}
 /* egg and buddy picker */
 .bigegg{display:block;line-height:0}
 .bigegg svg{width:clamp(150px,40vw,210px);height:auto;overflow:visible}
@@ -367,7 +452,7 @@ body{
   <div class="hill" aria-hidden="true"></div>
   <div class="intro-body">
     <div class="name" aria-label="Ethan's"></div>
-    <div class="subtitle">Math Adventure</div>
+    <div class="subtitle">Learning Adventure</div>
     <div class="buddy pending" id="introBuddy"><div class="bot" id="introBot" data-bot></div><div class="bubble" id="introBubble" aria-live="polite">Hi Ethan!</div></div>
     <button class="big go" id="letsgo" aria-label="Let's go">▶</button>
   </div>
@@ -380,14 +465,73 @@ body{
   </button>
 </div>
 <div class="overlay" id="start" hidden>
-  <div class="buddy" id="pickBuddy"><div class="bot" id="pickBot" data-bot></div><div class="bubble" id="pickBubble">Pick a game, Ethan!</div></div>
+  <div class="buddy" id="pickBuddy"><div class="bot" id="pickBot" data-bot></div><div class="bubble" id="pickBubble">What do you want to learn, Ethan?</div></div>
+  <div class="missions">
+    <button class="mission m-math" data-mission="math" aria-label="Math"><span class="mpic">1+2</span><span class="mname">Math</span></button>
+    <button class="mission m-es" data-mission="es" aria-label="Spanish"><span class="mpic">¡Hola!</span><span class="mname">Spanish</span></button>
+  </div>
+  <button class="eggbtn eggpick" aria-label="Get a new buddy"><span>🥚</span>New buddy</button>
+  <button class="gear" id="gear" aria-label="Parent settings"><span>⚙️</span>Parents · <i id="gearLv">Math level 1</i></button>
+</div>
+<div class="overlay" id="mathPick" hidden>
+  <div class="buddy"><div class="bot" data-bot></div><div class="bubble" id="mathBubble">Pick a math game!</div></div>
   <div class="pair">
     <div class="pick"><button class="big t add" data-start="add" aria-label="Play adding">+</button><span>Adding</span></div>
     <div class="pick"><button class="big t sub" data-start="sub" aria-label="Play taking away">−</button><span>Taking away</span></div>
     <div class="pick"><button class="big t mix" data-start="mix" aria-label="Play a mix">±</button><span>Mix</span></div>
   </div>
-  <button class="eggbtn eggpick" aria-label="Get a new buddy"><span>🥚</span>New buddy</button>
-  <button class="gear" id="gear" aria-label="Parent settings"><span>⚙️</span>Parents · <i id="gearLv">Level 1</i></button>
+  <button class="backbtn" id="mathBack" aria-label="Back">◀</button>
+</div>
+<div class="overlay es-set" id="esSet" hidden>
+  <div class="buddy"><div class="bot" data-bot></div><div class="bubble" id="esSetBubble">¡Hola, Ethan!</div></div>
+  <div class="es-crumbs" id="esCrumbs" aria-live="polite"></div>
+  <div class="es-opts" id="esStepCat">
+    <button class="es-opt" data-cat="house"><span class="ico">🏠</span><span class="lab">Home</span></button>
+    <button class="es-opt" data-cat="family"><span class="ico">👨‍👩‍👦</span><span class="lab">Family</span></button>
+    <button class="es-opt" data-cat="friends"><span class="ico">🧑‍🤝‍🧑</span><span class="lab">Friends</span></button>
+  </div>
+  <div class="es-opts" id="esStepLvl" hidden>
+    <button class="es-opt" data-elvl="basic"><span class="ico">🐣</span><span class="lab">Basic</span><span class="hint">one word</span></button>
+    <button class="es-opt" data-elvl="medium"><span class="ico">🐥</span><span class="lab">Medium</span><span class="hint">short sentence</span></button>
+    <button class="es-opt" data-elvl="fluent"><span class="ico">🦅</span><span class="lab">Fluent</span><span class="hint">long sentence</span></button>
+  </div>
+  <div class="es-nums" id="esStepNum" hidden>
+    <button class="es-num" data-num="5">5</button>
+    <button class="es-num" data-num="10">10</button>
+    <button class="es-num" data-num="15">15</button>
+    <button class="es-num" data-num="20">20</button>
+  </div>
+  <button class="backbtn" id="esSetBack" aria-label="Back">◀</button>
+</div>
+<div class="overlay es-play" id="es" hidden>
+  <div class="es-top">
+    <button class="iconbtn" id="esHome" aria-label="Exit to home screen">🏠</button>
+    <div class="es-prog" id="esProg" aria-hidden="true"></div>
+    <span class="es-count" id="esCount">1 / 10</span>
+  </div>
+  <div class="buddy mini"><div class="bot" id="esBot" data-bot></div><div class="bubble" id="esBubble" aria-live="polite">¡Vamos!</div></div>
+  <section class="es-card" id="esCard">
+    <div class="es-pic" id="esPic" aria-hidden="true"></div>
+    <div class="es-en"><span class="tag">English</span><span id="esEn"></span><button class="es-hear" id="esHearQ" aria-label="Hear the question again">🔊</button></div>
+    <div class="es-think" id="esThink"><span class="hmm" aria-hidden="true">🤔</span><div class="es-bar"><i id="esBarFill"></i></div></div>
+    <button class="es-reveal" id="esReveal" hidden><span class="ear" aria-hidden="true">👂</span>Tap for the answer</button>
+    <div class="es-ans" id="esAns" hidden><span class="tag">Español</span><span class="es-word" id="esWord"></span></div>
+    <div class="es-say" id="esSay" hidden><span class="mic" aria-hidden="true">🗣️</span> Say it with me!</div>
+    <div class="es-nextrow" id="esNextRow" hidden>
+      <button class="es-btn again" id="esAgain"><span aria-hidden="true">🔁</span>Again</button>
+      <button class="es-btn next" id="esNext">Next<span aria-hidden="true">▶</span></button>
+    </div>
+  </section>
+  <section class="es-done" id="esDone" hidden>
+    <div class="trophy" aria-hidden="true">🏆</div>
+    <div class="es-done-title">¡Muy bien, Ethan!</div>
+    <div class="es-done-sub" id="esDoneSub"></div>
+    <div class="es-chips" id="esChips"></div>
+    <div class="pair">
+      <button class="big" id="esReplay" aria-label="Play again">↻</button>
+      <button class="big homebig" id="esToHome" aria-label="Home">🏠</button>
+    </div>
+  </section>
 </div>
 <div class="overlay hatch" id="hatch" hidden>
   <div class="hatch-top"><span class="bigegg small" id="hatchEgg"></span><div class="bubble" id="hatchBubble">Pick your buddy, Ethan!</div></div>
@@ -484,7 +628,23 @@ function chooseVoice(){
     kidVoice=/ana/i.test(bestVoice.name);
   }catch(e){}
 }
-try{chooseVoice();speechSynthesis.addEventListener("voiceschanged",chooseVoice)}catch(e){}
+/* a clear Spanish voice for the answers: Latin American first, then Spain, then any Spanish voice */
+const ES_VOICE_PREFS=[
+  /paulina.*(premium|enhanced)/i,/(dalia|jorge|candela|libertad|paloma|alonso|elena|elvira|ximena|camila|valentina).*natural/i,
+  /m[oó]nica.*(premium|enhanced)/i,/premium/i,/enhanced/i,/natural/i,/neural/i,
+  /google español de estados unidos/i,/google español/i,/^paulina/i,/^juan/i,/^m[oó]nica/i,/^jorge/i,/^diego/i
+];
+let esVoice=null;
+function chooseEsVoice(){
+  try{
+    const all=speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang));if(!all.length)return;
+    const la=all.filter(v=>/es[-_](mx|us|419|co|ar|cl)/i.test(v.lang));
+    esVoice=null;
+    for(const re of ES_VOICE_PREFS){const v=la.find(x=>re.test(x.name))||all.find(x=>re.test(x.name));if(v){esVoice=v;break}}
+    if(!esVoice)esVoice=la[0]||all[0];
+  }catch(e){}
+}
+try{chooseVoice();chooseEsVoice();speechSynthesis.addEventListener("voiceschanged",()=>{chooseVoice();chooseEsVoice()})}catch(e){}
 /* small touches that make speech sound more human: commas for breathing room */
 function humanize(t){return t.replace(/!(?=\s|$)/g,"!").replace(/\bEthan\b/g,"Ethan,").replace(/,,/g,",").replace(/,([!?.])/g,"$1")}
 function talking(on){document.querySelectorAll(".bot").forEach(b=>b.classList.toggle("talk",on))}
@@ -492,18 +652,25 @@ function speakTime(txt){return 500+txt.length*62}
 /* keep a reference to the current line; Safari can drop lines (and never report the end)
    when the utterance object is cleaned up too early */
 let curUtter=null,speechGen=0;
-function say(txt,bubbleId="gameBubble"){
+function say(txt,bubbleId="gameBubble",opts={}){
   const b=$(bubbleId);if(b){b.textContent=txt;b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop")}
-  clearTimeout(talkTimer);talking(true);talkTimer=setTimeout(()=>talking(false),speakTime(txt));
+  const isEs=!!opts.es,rate=isEs?(opts.rate||.65):1;
+  clearTimeout(talkTimer);talking(true);talkTimer=setTimeout(()=>talking(false),speakTime(txt)/rate);
   const gen=++speechGen;
   return new Promise(res=>{
     if(!soundOn)return res();
     try{
       const s=window.speechSynthesis;if(!s)return res();
-      const u=new SpeechSynthesisUtterance(humanize(txt));
-      if(bestVoice){u.voice=bestVoice;u.lang=bestVoice.lang}
-      /* gentle, warm settings; a very high pitch is what sounds robotic */
-      u.rate=/^\d+$/.test(txt)?0.9:0.95;u.pitch=kidVoice?1.0:((BUDDIES[buddy]||{}).pitch||1.12);u.volume=1;
+      const u=new SpeechSynthesisUtterance(isEs?txt:humanize(txt));
+      if(isEs){
+        /* Spanish answers: real Spanish voice, slow and clear */
+        if(esVoice){u.voice=esVoice;u.lang=esVoice.lang}else u.lang="es-MX";
+        u.rate=rate;u.pitch=1.05;u.volume=1;
+      }else{
+        if(bestVoice){u.voice=bestVoice;u.lang=bestVoice.lang}
+        /* gentle, warm settings; a very high pitch is what sounds robotic */
+        u.rate=/^\d+$/.test(txt)?0.9:0.95;u.pitch=kidVoice?1.0:((BUDDIES[buddy]||{}).pitch||1.12);u.volume=1;
+      }
       let done=false;const fin=()=>{if(done)return;done=true;if(gen===speechGen){clearTimeout(talkTimer);talking(false)}res()};
       u.onend=fin;u.onerror=fin;
       curUtter=u;
@@ -511,7 +678,7 @@ function say(txt,bubbleId="gameBubble"){
       if(s.speaking||s.pending){s.cancel();setTimeout(()=>{if(gen===speechGen)s.speak(u);else fin()},120)}
       else s.speak(u);
       /* safety net in case a browser never reports the end */
-      setTimeout(fin,speakTime(txt)*1.8+2500);
+      setTimeout(fin,speakTime(txt)/rate*1.8+2500);
     }catch(e){res()}
   });
 }
@@ -736,7 +903,7 @@ document.querySelectorAll("[data-c]").forEach(b=>b.addEventListener("click",()=>
 document.querySelectorAll("[data-lv]").forEach(b=>b.addEventListener("click",()=>{setDigits(+b.dataset.lv);tone(700,.08);saveSettings()}));
 /* Ethan just picks a game and plays; size and count come from the parent settings */
 document.querySelectorAll("[data-start]").forEach(b=>b.addEventListener("click",()=>{
-  setType(b.dataset.start);$("start").hidden=true;tone(660,.1);warmUp();
+  setType(b.dataset.start);$("mathPick").hidden=true;tone(660,.1);warmUp();
 }));
 /* pick either 2 or 3 numbers, never both */
 let counts=[2];
@@ -805,7 +972,7 @@ const LEVEL_NAMES={1:"Easy",2:"A little harder",3:"Big numbers",4:"Big challenge
 function showLevelTag(){
   const l=currentLevel();
   const t=$("lvTag");if(t)t.textContent=`Level ${l} · ${LEVEL_NAMES[l]}`;
-  const g=$("gearLv");if(g)g.textContent=`Level ${l}`;
+  const g=$("gearLv");if(g)g.textContent=`Math level ${l}`;
 }
 function showLevel(){const l=currentLevel();showLevelTag();document.querySelectorAll("[data-level]").forEach(m=>m.setAttribute("aria-pressed",+m.dataset.level===l?"true":"false"))}
 document.querySelectorAll("[data-level]").forEach(b=>b.addEventListener("click",()=>{
@@ -890,16 +1057,16 @@ async function showIntro(){
   bot.classList.remove("wave");void bot.offsetWidth;bot.classList.add("wave");
   await sleep(500);if(!alive())return;
   await sayWait(`Hi Ethan! I'm ${BUDDIES[buddy].name}, your new buddy!`,"introBubble");if(!alive())return;
-  await sayWait("Let's have fun and learn math together!","introBubble");if(!alive())return;
+  await sayWait("Let's have fun and learn together!","introBubble");if(!alive())return;
   go.style.visibility="";
   say("Tap the green button!","introBubble");
 }
-function pickGreet(){say(pick(["Pick a game, Ethan!","What should we play, Ethan?","Choose a game, buddy!"]),"pickBubble")}
+function pickGreet(){say(pick(["What do you want to learn, Ethan? Math or Spanish?","Math or Spanish, Ethan? You pick!","What should we learn today, Ethan?"]),"pickBubble")}
 /* the "tap to enter" screen: an egg wiggles while numbers float by; one tap hatches it */
 (function(){
   $("intro").querySelector(".intro-body").classList.add("waiting");
   $("tapme").hidden=false;
-  const f=$("floaters"),items=["1","2","3","4","5","6","7","8","9","10","+","−","=","⭐","🎈"],cols=["#ff8a3d","#29a8ff","#a55cff","#22a852","#ec4545","#ffb400","#ff5fa2"];
+  const f=$("floaters"),items=["1","2","3","4","5","6","7","8","9","10","+","−","=","⭐","🎈","¡Hola!","Sí"],cols=["#ff8a3d","#29a8ff","#a55cff","#22a852","#ec4545","#ffb400","#ff5fa2"];
   let h="";
   for(let i=0;i<16;i++){
     h+=`<span style="left:${Math.round(i*6.2+Math.random()*4)}%;font-size:${28+Math.round(Math.random()*30)}px;--c:${pick(cols)};--d:${9+Math.random()*7}s;--dl:${-Math.random()*14}s;--x:${Math.round(Math.random()*60-30)}px;--r:${Math.round(Math.random()*40-20)}deg">${pick(items)}</span>`;
@@ -1019,6 +1186,274 @@ $("hatchGrid").addEventListener("click",e=>{
 });
 document.querySelectorAll(".eggbtn").forEach(b=>b.addEventListener("click",()=>{primeSpeech();openHatch("switch")}));
 renderBuddies();$("tapEgg").innerHTML=EGG_SVG;
+
+/* Spanish vocabulary: [English, Spanish, picture] */
+const ES={
+  house:{
+    basic:[
+      ["house","casa","🏠"],["door","puerta","🚪"],["window","ventana","🪟"],["bed","cama","🛏️"],
+      ["chair","silla","🪑"],["bathroom","baño","🚽"],["soap","jabón","🧼"],["brush","cepillo","🪥"],
+      ["cup","taza","☕"],["spoon","cuchara","🥄"],["key","llave","🔑"],["clock","reloj","🕰️"],
+      ["couch","sofá","🛋️"],["TV","televisión","📺"],["light","luz","💡"],["water","agua","💧"],
+      ["milk","leche","🥛"],["bread","pan","🍞"],["toy","juguete","🧸"],["shower","ducha","🚿"],
+      ["broom","escoba","🧹"],["book","libro","📖"]
+    ],
+    medium:[
+      ["I want water","Yo quiero agua","💧"],["I want milk","Yo quiero leche","🥛"],["I want bread","Yo quiero pan","🍞"],
+      ["I want to sleep","Yo quiero dormir","😴"],["I want to play","Yo quiero jugar","🧸"],["I want to eat","Yo quiero comer","🍽️"],
+      ["I want cookies","Yo quiero galletas","🍪"],["I'm hungry","Yo tengo hambre","🍎"],["I'm thirsty","Yo tengo sed","🥤"],
+      ["I'm sleepy","Yo tengo sueño","🛏️"],["I'm cold","Yo tengo frío","🥶"],["I'm hot","Yo tengo calor","🥵"],
+      ["I have a toy","Yo tengo un juguete","🧸"],["I have a book","Yo tengo un libro","📖"],
+      ["Give me water, please","Dame agua, por favor","💧"],["Give me milk, please","Dame leche, por favor","🥛"],
+      ["Give me bread, please","Dame pan, por favor","🍞"],["Give me soap, please","Dame jabón, por favor","🧼"],
+      ["Give me juice, please","Dame jugo, por favor","🧃"],["Give me more, please","Dame más, por favor","🍽️"]
+    ],
+    fluent:[
+      ["Please help me set the table.","Por favor, ayúdame a poner la mesa.","🍽️"],
+      ["It's time to brush your teeth and go to bed.","Es hora de cepillarte los dientes e ir a la cama.","🪥"],
+      ["Can you turn off the light, please?","¿Puedes apagar la luz, por favor?","💡"],
+      ["Don't forget to wash your hands before eating.","No olvides lavarte las manos antes de comer.","🧼"],
+      ["I want to watch TV in the living room.","Quiero ver la tele en la sala.","📺"],
+      ["Where did you put my shoes?","¿Dónde pusiste mis zapatos?","👟"],
+      ["Dinner is ready, come to the kitchen.","La cena está lista, ven a la cocina.","🍲"],
+      ["Please pick up your toys from the floor.","Por favor, recoge tus juguetes del piso.","🧸"],
+      ["I'm going to take a bath now.","Me voy a bañar ahora.","🛁"],
+      ["Can I have a glass of milk, please?","¿Me das un vaso de leche, por favor?","🥛"],
+      ["Close the door because it's cold.","Cierra la puerta porque hace frío.","🚪"],
+      ["The dog is sleeping on the couch.","El perro está durmiendo en el sofá.","🛋️"],
+      ["My room is clean and tidy.","Mi cuarto está limpio y ordenado.","🧹"],
+      ["Let's read a book before bed.","Vamos a leer un libro antes de dormir.","📖"],
+      ["I like to play in the backyard.","Me gusta jugar en el patio.","🌳"],
+      ["Wake up, it's time to go to school.","Despierta, es hora de ir a la escuela.","⏰"],
+      ["Thank you for the food, it's delicious.","Gracias por la comida, está deliciosa.","🍲"],
+      ["Please take out the trash.","Por favor, saca la basura.","🗑️"],
+      ["Turn off the TV, it's time to sleep.","Apaga la tele, es hora de dormir.","📺"],
+      ["Can you open the window? It's hot.","¿Puedes abrir la ventana? Hace calor.","🪟"]
+    ]
+  },
+  family:{
+    basic:[
+      ["mom","mamá","👩"],["dad","papá","👨"],["brother","hermano","👦"],["sister","hermana","👧"],
+      ["grandma","abuela","👵"],["grandpa","abuelo","👴"],["baby","bebé","👶"],["family","familia","👨‍👩‍👦"],
+      ["uncle","tío","🧔"],["aunt","tía","👩‍🦰"],["cousin","primo","🧒"],["love","amor","❤️"],
+      ["hug","abrazo","🤗"],["kiss","beso","😘"],["happy","feliz","😊"],["sad","triste","😢"],
+      ["hello","hola","👋"],["thank you","gracias","🙏"],["yes","sí","✅"],["no","no","❌"],
+      ["dog","perro","🐶"],["cat","gato","🐱"]
+    ],
+    medium:[
+      ["I love you, Mom","Te quiero, mamá","❤️"],["I love you, Dad","Te quiero, papá","💙"],["I love you, Grandma","Te quiero, abuela","💛"],
+      ["I want a hug","Yo quiero un abrazo","🤗"],["I want a kiss","Yo quiero un beso","😘"],["I want to play with you","Yo quiero jugar contigo","🎲"],
+      ["I have a brother","Yo tengo un hermano","👦"],["I have a sister","Yo tengo una hermana","👧"],["I have a cousin","Yo tengo un primo","🧒"],
+      ["I have an aunt","Yo tengo una tía","👩‍🦰"],["I have a dog","Yo tengo un perro","🐶"],["I have a cat","Yo tengo un gato","🐱"],
+      ["Give me a hug","Dame un abrazo","🤗"],["Give me a kiss","Dame un beso","😘"],["Give me your hand","Dame la mano","🤝"],
+      ["Help me, please","Ayúdame, por favor","🙋"],["I am happy","Yo estoy feliz","😄"],["Thank you, Mom","Gracias, mamá","🙏"],
+      ["Good morning, Dad","Buenos días, papá","☀️"],["Good night, Mom","Buenas noches, mamá","🌙"]
+    ],
+    fluent:[
+      ["Mom, can you help me with my homework?","Mamá, ¿me ayudas con mi tarea?","📚"],
+      ["Grandpa, can you tell me a story?","Abuelo, ¿me cuentas un cuento?","📖"],
+      ["I love my family very much.","Quiero mucho a mi familia.","❤️"],
+      ["Dad, can we go to the park today?","Papá, ¿podemos ir al parque hoy?","🌳"],
+      ["My sister and I like to play together.","A mi hermana y a mí nos gusta jugar juntos.","👧"],
+      ["Grandma makes the best cookies.","La abuela hace las mejores galletas.","🍪"],
+      ["Thank you for taking care of me.","Gracias por cuidarme.","🤗"],
+      ["I'm sorry, I didn't mean to do it.","Lo siento, no fue mi intención.","😔"],
+      ["Can I give you a big hug?","¿Te puedo dar un abrazo grande?","💛"],
+      ["My brother is playing with the dog.","Mi hermano está jugando con el perro.","🐶"],
+      ["We are going to visit my aunt and uncle.","Vamos a visitar a mis tíos.","🚗"],
+      ["Happy birthday, I hope you have a great day.","Feliz cumpleaños, que tengas un gran día.","🎂"],
+      ["Mom, I'm hungry. What's for dinner?","Mamá, tengo hambre. ¿Qué hay de cenar?","🍲"],
+      ["I had a lot of fun with you today.","Me divertí mucho contigo hoy.","😄"],
+      ["Good night, I love you, see you tomorrow.","Buenas noches, te quiero, hasta mañana.","🌙"],
+      ["Dad, will you play soccer with me?","Papá, ¿juegas fútbol conmigo?","⚽"],
+      ["My cousin is coming to my house today.","Mi primo viene a mi casa hoy.","🏠"],
+      ["The baby is sleeping, don't make noise.","El bebé está durmiendo, no hagas ruido.","👶"],
+      ["Thank you for the gift, I love it.","Gracias por el regalo, me encanta.","🎁"],
+      ["Can you read me a book before bed?","¿Me lees un libro antes de dormir?","📖"]
+    ]
+  },
+  friends:{
+    basic:[
+      ["friend","amigo","🧑‍🤝‍🧑"],["game","juego","🎲"],["park","parque","🌳"],["school","escuela","🏫"],
+      ["teacher","maestra","👩‍🏫"],["fun","divertido","🎉"],["bike","bicicleta","🚲"],["soccer","fútbol","⚽"],
+      ["run","correr","🏃"],["jump","saltar","🦘"],["sing","cantar","🎤"],["dance","bailar","💃"],
+      ["draw","dibujar","🖍️"],["swim","nadar","🏊"],["win","ganar","🏆"],["cookie","galleta","🍪"],
+      ["ice cream","helado","🍦"],["candy","dulce","🍬"],["gift","regalo","🎁"],["birthday","cumpleaños","🎂"],
+      ["hello","hola","👋"]
+    ],
+    medium:[
+      ["I want to play soccer","Yo quiero jugar fútbol","⚽"],["I want ice cream","Yo quiero helado","🍦"],["I want pizza","Yo quiero pizza","🍕"],
+      ["I want a cookie","Yo quiero una galleta","🍪"],["I want the ball","Yo quiero la pelota","🏀"],["I want to be your friend","Quiero ser tu amigo","🧑‍🤝‍🧑"],
+      ["I have a ball","Yo tengo una pelota","⚽"],["I have a bike","Yo tengo una bici","🚲"],["I have a friend","Yo tengo un amigo","😊"],
+      ["I have candy","Yo tengo dulces","🍬"],["I have a present","Yo tengo un regalo","🎁"],
+      ["Pass me the ball","Pásame la pelota","⚽"],["Give me one, please","Dame uno, por favor","🍬"],["Give me a candy","Dame un dulce","🍭"],
+      ["Do you want to play?","¿Quieres jugar?","🎲"],["Your turn","Te toca","👉"],["My turn","Me toca","🙋"],
+      ["Good job!","¡Buen trabajo!","👏"],["Thank you, friend","Gracias, amigo","🙏"],["What's your name?","¿Cómo te llamas?","👋"],
+      ["My name is Ethan","Me llamo Ethan","😊"]
+    ],
+    fluent:[
+      ["Do you want to come to my house to play?","¿Quieres venir a mi casa a jugar?","🏠"],
+      ["My favorite game is soccer.","Mi juego favorito es el fútbol.","⚽"],
+      ["Can I play with you at recess?","¿Puedo jugar contigo en el recreo?","🏫"],
+      ["Let's build a big castle with blocks.","Vamos a construir un castillo grande con bloques.","🏰"],
+      ["You are a really good friend.","Eres muy buen amigo.","🧑‍🤝‍🧑"],
+      ["Do you want to share my snack?","¿Quieres compartir mi merienda?","🍪"],
+      ["I'm sorry, I didn't mean to push you.","Perdón, no quise empujarte.","😔"],
+      ["Let's see who gets to the tree first!","¡Vamos a ver quién llega primero al árbol!","🌳"],
+      ["What is your favorite color?","¿Cuál es tu color favorito?","🎨"],
+      ["My favorite color is blue.","Mi color favorito es el azul.","💙"],
+      ["Do you want to ride bikes after school?","¿Quieres andar en bici después de la escuela?","🚲"],
+      ["Thank you for inviting me to your party.","Gracias por invitarme a tu fiesta.","🎉"],
+      ["We can take turns with the ball.","Podemos turnarnos con la pelota.","🏀"],
+      ["Let's play hide and seek.","Vamos a jugar a las escondidas.","🙈"],
+      ["Can you help me find my toy?","¿Me ayudas a buscar mi juguete?","🧸"],
+      ["I had a lot of fun playing with you.","Me divertí mucho jugando contigo.","😄"],
+      ["Do you have a dog or a cat?","¿Tienes un perro o un gato?","🐶"],
+      ["Let's draw a picture together.","Vamos a hacer un dibujo juntos.","🖍️"],
+      ["See you tomorrow at school, friend!","¡Nos vemos mañana en la escuela, amigo!","👋"],
+      ["How old are you, and when is your birthday?","¿Cuántos años tienes y cuándo es tu cumpleaños?","🎂"]
+    ]
+  }
+};
+
+/* ---------- missions: Math or Spanish ---------- */
+document.querySelectorAll("[data-mission]").forEach(b=>b.addEventListener("click",()=>{
+  tone(660,.1);$("start").hidden=true;
+  if(b.dataset.mission==="math"){
+    $("mathPick").hidden=false;
+    say(pick(["Math time! Pick a game, Ethan!","Let's do math! Which one, Ethan?"]),"mathBubble");
+  }else openEsSetup();
+}));
+$("mathBack").addEventListener("click",()=>{hush();$("mathPick").hidden=true;$("start").hidden=false;pickGreet()});
+
+/* ---------- Spanish setup: category, level, how many ---------- */
+const CAT_LABEL={house:["🏠","Home"],family:["👨‍👩‍👦","Family"],friends:["🧑‍🤝‍🧑","Friends"]};
+const LVL_LABEL={basic:["🐣","Basic"],medium:["🐥","Medium"],fluent:["🦅","Fluent"]};
+const es={step:0,cat:null,lvl:null,num:10,list:[],i:0,run:0,learned:[],busy:false};
+function esCrumbs(){
+  const c=[];
+  if(es.step>0&&es.cat)c.push(CAT_LABEL[es.cat].join(" "));
+  if(es.step>1&&es.lvl)c.push(LVL_LABEL[es.lvl].join(" "));
+  $("esCrumbs").innerHTML=c.map(x=>`<span>${x}</span>`).join("");
+}
+function esStep(n){
+  es.step=n;["esStepCat","esStepLvl","esStepNum"].forEach((id,i)=>$(id).hidden=i!==n);esCrumbs();
+}
+function openEsSetup(){
+  $("esSet").hidden=false;esStep(0);
+  say("¡Hola, Ethan! Spanish time! Where should we practice?","esSetBubble");
+}
+document.querySelectorAll("[data-cat]").forEach(b=>b.addEventListener("click",()=>{
+  es.cat=b.dataset.cat;tone(700,.08);esStep(1);
+  say(`${CAT_LABEL[es.cat][1]}! Now, how hard? Basic, medium, or fluent?`,"esSetBubble");
+}));
+document.querySelectorAll("[data-elvl]").forEach(b=>b.addEventListener("click",()=>{
+  es.lvl=b.dataset.elvl;tone(760,.08);esStep(2);
+  say(`${LVL_LABEL[es.lvl][1]}! How many ${es.lvl==="basic"?"words":"sentences"} do you want to learn?`,"esSetBubble");
+}));
+document.querySelectorAll("[data-num]").forEach(b=>b.addEventListener("click",()=>{
+  es.num=+b.dataset.num;tone(880,.1);startEs();
+}));
+$("esSetBack").addEventListener("click",()=>{
+  hush();tone(500,.08);
+  if(es.step>0){esStep(es.step-1);say(es.step===0?"Where should we practice?":"How hard should it be?","esSetBubble")}
+  else{$("esSet").hidden=true;$("start").hidden=false;pickGreet()}
+});
+
+/* ---------- Spanish practice ---------- */
+const ES_WAIT={basic:3500,medium:5500,fluent:7500};   /* thinking time before the answer button shows */
+const ES_RATE={basic:.6,medium:.62,fluent:.72};        /* slow, clear Spanish */
+function bubble(id,txt){const b=$(id);if(b){b.textContent=txt;b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop")}}
+function startEs(){
+  const pool=ES[es.cat][es.lvl];
+  let list=[];while(list.length<es.num)list=list.concat(shuffle(pool.slice()));
+  es.list=list.slice(0,es.num);es.i=0;es.learned=[];
+  $("esSet").hidden=true;$("es").hidden=false;$("esDone").hidden=true;$("esCard").hidden=false;
+  esShow();
+}
+function esProgress(){
+  $("esProg").innerHTML=es.list.map((_,k)=>`<i class="${k<es.i?"ok":k===es.i?"now":""}"></i>`).join("");
+  $("esCount").textContent=`${Math.min(es.i+1,es.list.length)} / ${es.list.length}`;
+}
+function esQuestion(){
+  const en=es.list[es.i][0];
+  return es.lvl==="basic"?`Ethan, how do you say ${en} in Spanish?`:`Ethan, how do you say: ${en.replace(/[.!]$/,"")}. In Spanish?`;
+}
+async function esShow(){
+  const my=++es.run,alive=()=>my===es.run&&!$("es").hidden;
+  es.busy=true;
+  const [en,sp,picTxt]=es.list[es.i],card=$("esCard");
+  esProgress();
+  card.className="es-card "+es.lvl;void card.offsetWidth;card.classList.add("in");
+  $("esPic").textContent=picTxt;$("esEn").textContent=en;$("esWord").textContent=sp;
+  ["esReveal","esAns","esSay","esNextRow"].forEach(id=>$(id).hidden=true);
+  const bar=$("esBarFill");bar.style.transition="none";bar.style.width="0";$("esThink").hidden=false;
+  tone(620,.08,"triangle",.12);
+  await sayWait(esQuestion(),"esBubble");if(!alive())return;
+  /* thinking time, a bit longer for medium and fluent */
+  const wait=ES_WAIT[es.lvl];
+  bubble("esBubble","Hmm... think about it!");
+  void bar.offsetWidth;bar.style.transition=`width ${wait}ms linear`;bar.style.width="100%";
+  for(let t=0;t<wait;t+=1000){tone(990,.03,"sine",.05);await sleep(Math.min(1000,wait-t));if(!alive())return}
+  $("esThink").hidden=true;$("esReveal").hidden=false;es.busy=false;
+  say("Tap for the answer!","esBubble");
+}
+async function speakEs(txt,rate){
+  const w=$("esWord");w.classList.add("speaking");
+  const t0=Date.now();
+  await say(txt,"esBubble",{es:true,rate});
+  const min=soundOn?500:speakTime(txt)/rate;const spent=Date.now()-t0;if(spent<min)await sleep(min-spent);
+  w.classList.remove("speaking");
+}
+$("esReveal").addEventListener("click",async()=>{
+  if(es.busy)return;es.busy=true;
+  const my=es.run,alive=()=>my===es.run&&!$("es").hidden;
+  const sp=es.list[es.i][1],rate=ES_RATE[es.lvl];
+  $("esReveal").hidden=true;$("esAns").hidden=false;sparkle();
+  /* first time: just say the answer */
+  await sleep(450);if(!alive())return;
+  await speakEs(sp,rate);if(!alive())return;
+  await sleep(700);if(!alive())return;
+  /* second time: say it together, a little slower */
+  $("esSay").hidden=false;
+  await sayWait("Now say it with me, Ethan!","esBubble");if(!alive())return;
+  await sleep(300);
+  await speakEs(sp,rate*.9);if(!alive())return;
+  await sleep(500);if(!alive())return;
+  $("esSay").hidden=true;
+  if(!es.learned.includes(sp))es.learned.push(sp);
+  {const eb=$("esBot");eb.classList.remove("happy");void eb.offsetWidth;eb.classList.add("happy")}
+  if(Math.random()<.5)say("¡Muy bien, Ethan!","esBubble",{es:true,rate:.85});
+  else say(pick(["Great job, Ethan!","Awesome!","You did it!","Super!"]),"esBubble");
+  $("esNextRow").hidden=false;es.busy=false;
+});
+$("esAgain").addEventListener("click",async()=>{
+  if(es.busy)return;es.busy=true;
+  const b=$("esAgain");b.disabled=true;
+  await speakEs(es.list[es.i][1],ES_RATE[es.lvl]*.9);
+  b.disabled=false;es.busy=false;
+});
+$("esNext").addEventListener("click",()=>{
+  if(es.busy)return;hush();es.i++;
+  if(es.i>=es.list.length)esFinish();else esShow();
+});
+$("esHearQ").addEventListener("click",()=>{if(!$("esThink").hidden||!$("esReveal").hidden)say(esQuestion(),"esBubble")});
+async function esFinish(){
+  const my=++es.run;
+  esProgress();$("esCount").textContent=`${es.list.length} / ${es.list.length}`;
+  $("esCard").hidden=true;$("esDone").hidden=false;
+  const n=es.learned.length,what=es.lvl==="basic"?"Spanish words":"Spanish sentences";
+  $("esDoneSub").textContent=`You learned ${n} ${n===1?what.replace(/s$/,""):what}!`;
+  $("esChips").innerHTML=es.learned.map(w=>`<button data-say="${w.replace(/"/g,"&quot;")}">${w}</button>`).join("");
+  cheer();confetti();
+  await say("¡Muy bien, Ethan!","esBubble",{es:true,rate:.85});if(my!==es.run)return;
+  say(`You learned ${n} ${what}! Way to go!`,"esBubble");
+}
+$("esChips").addEventListener("click",e=>{const b=e.target.closest("button");if(b)say(b.dataset.say,"esBubble",{es:true,rate:ES_RATE[es.lvl]})});
+$("esReplay").addEventListener("click",()=>{tone(700,.1);startEs()});
+function esExit(){es.run++;es.busy=false;hush();$("es").hidden=true;$("start").hidden=false;pickGreet()}
+$("esToHome").addEventListener("click",esExit);
+$("esHome").addEventListener("click",esExit);
 
 loadSettings();setDigits(digits);showCounts();showGames();showLevelTag();renderStars();cur=make();renderProblem();
 </script>

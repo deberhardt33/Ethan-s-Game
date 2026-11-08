@@ -1,6 +1,6 @@
-# Ethan's Math Adventure
+# Ethan's Learning Game
 
-A picture based addition and subtraction game for an early reader. Problems are shown with pictures (or tens bars and ones cubes for double digits) and read out loud, so no reading is needed.
+A picture based learning game for an early reader, with Math and Spanish missions. Problems are shown with pictures (or tens bars and ones cubes for double digits) and read out loud, so no reading is needed.
 
 ## Play
 Open `index.html` in a web browser. With GitHub Pages turned on, the game is at
