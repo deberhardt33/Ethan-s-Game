@@ -280,7 +280,9 @@ body{
 .es-crumbs span{background:#fff;color:var(--ink);font-weight:800;font-size:17px;padding:5px 14px;border-radius:999px;box-shadow:0 3px 0 rgba(43,58,85,.15);animation:pop .3s both}
 .es-opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:min(560px,100%)}
 .es-opt{border:0;cursor:pointer;background:var(--card);border-radius:24px;padding:16px 6px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 6px 0 rgba(43,58,85,.22);font-family:var(--display);color:var(--ink);animation:pop .4s both}
-.es-opt:nth-child(2){animation-delay:.08s}.es-opt:nth-child(3){animation-delay:.16s}
+.es-opt:nth-child(2){animation-delay:.08s}.es-opt:nth-child(3){animation-delay:.16s}.es-opt:nth-child(4){animation-delay:.24s}
+.es-opts.four{grid-template-columns:repeat(4,minmax(0,1fr));width:min(720px,100%)}
+@media (max-width:600px){.es-opts.four{grid-template-columns:repeat(2,minmax(0,1fr));width:min(380px,100%)}}
 .es-opt:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(43,58,85,.22)}
 .es-opt:focus-visible,.es-num:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
 .es-opt .ico{font-size:clamp(44px,12vw,66px);line-height:1.1}
@@ -485,10 +487,11 @@ body{
 <div class="overlay es-set" id="esSet" hidden>
   <div class="buddy"><div class="bot" data-bot></div><div class="bubble" id="esSetBubble">¡Hola, Ethan!</div></div>
   <div class="es-crumbs" id="esCrumbs" aria-live="polite"></div>
-  <div class="es-opts" id="esStepCat">
+  <div class="es-opts four" id="esStepCat">
     <button class="es-opt" data-cat="house"><span class="ico">🏠</span><span class="lab">Home</span></button>
     <button class="es-opt" data-cat="family"><span class="ico">👨‍👩‍👦</span><span class="lab">Family</span></button>
     <button class="es-opt" data-cat="friends"><span class="ico">🧑‍🤝‍🧑</span><span class="lab">Friends</span></button>
+    <button class="es-opt" data-cat="body"><span class="ico">🖐️</span><span class="lab">Body</span></button>
   </div>
   <div class="es-opts" id="esStepLvl" hidden>
     <button class="es-opt" data-elvl="basic"><span class="ico">🐣</span><span class="lab">Basic</span><span class="hint">one word</span></button>
@@ -1272,6 +1275,47 @@ const ES={
       ["Can you read me a book before bed?","¿Me lees un libro antes de dormir?","📖"]
     ]
   },
+  body:{
+    basic:[
+      ["head","cabeza","👤"],["face","cara","🙂"],["eye","ojo","👁️"],["ear","oreja","👂"],
+      ["nose","nariz","👃"],["mouth","boca","👄"],["tooth","diente","🦷"],["tongue","lengua","👅"],
+      ["hair","pelo","💇"],["hand","mano","✋"],["finger","dedo","☝️"],["thumb","pulgar","👍"],
+      ["arm","brazo","💪"],["leg","pierna","🦵"],["foot","pie","🦶"],["knee","rodilla","🩹"],
+      ["heart","corazón","❤️"],["bone","hueso","🦴"],["nail","uña","💅"],["neck","cuello","🧣"],
+      ["back","espalda","🎒"]
+    ],
+    medium:[
+      ["I have two eyes","Yo tengo dos ojos","👀"],["I have two hands","Yo tengo dos manos","🙌"],["I have ten fingers","Yo tengo diez dedos","🖐️"],
+      ["I have one nose","Yo tengo una nariz","👃"],["I have one mouth","Yo tengo una boca","👄"],["I have two ears","Yo tengo dos orejas","👂"],
+      ["I have two feet","Yo tengo dos pies","🦶"],["My head hurts","Me duele la cabeza","🤕"],["My tummy hurts","Me duele la panza","🤢"],
+      ["My foot hurts","Me duele el pie","🩹"],["My tooth hurts","Me duele el diente","🦷"],["Wash your hands","Lávate las manos","🧼"],
+      ["Brush your teeth","Cepíllate los dientes","🪥"],["Wash your face","Lávate la cara","💦"],["Give me your hand","Dame la mano","🤝"],
+      ["Touch your nose","Toca tu nariz","👃"],["Move your arms","Mueve los brazos","💪"],["Clap your hands","Aplaude con las manos","👏"],
+      ["Open your mouth","Abre la boca","😮"],["Close your eyes","Cierra los ojos","😌"],["Raise your hand","Levanta la mano","✋"]
+    ],
+    fluent:[
+      ["I wash my hands before I eat.","Me lavo las manos antes de comer.","🧼"],
+      ["I brush my teeth every morning and every night.","Me cepillo los dientes cada mañana y cada noche.","🪥"],
+      ["My tummy hurts, I ate too much candy.","Me duele la panza, comí muchos dulces.","🍬"],
+      ["I use my eyes to see and my ears to hear.","Uso mis ojos para ver y mis orejas para escuchar.","👀"],
+      ["I kick the ball with my foot.","Pateo la pelota con el pie.","⚽"],
+      ["I hurt my knee at the park.","Me lastimé la rodilla en el parque.","🩹"],
+      ["Touch your head, then touch your toes.","Tócate la cabeza y luego los dedos de los pies.","🙆"],
+      ["Raise your hand if you know the answer.","Levanta la mano si sabes la respuesta.","✋"],
+      ["I need to get a haircut.","Necesito cortarme el pelo.","💇"],
+      ["Clap your hands and stomp your feet!","¡Aplaude con las manos y zapatea con los pies!","👏"],
+      ["I have ten fingers and ten toes.","Tengo diez dedos en las manos y diez en los pies.","🖐️"],
+      ["Cover your mouth when you cough.","Tápate la boca cuando tosas.","😷"],
+      ["Blow your nose with a tissue.","Suénate la nariz con un pañuelo.","🤧"],
+      ["My heart beats fast when I run.","Mi corazón late rápido cuando corro.","❤️"],
+      ["Open your mouth wide, please.","Abre bien la boca, por favor.","😮"],
+      ["I can smell the cookies with my nose.","Puedo oler las galletas con mi nariz.","🍪"],
+      ["I put my shoes on my feet.","Me pongo los zapatos en los pies.","👟"],
+      ["Wash your face and dry it with a towel.","Lávate la cara y sécala con una toalla.","💦"],
+      ["My tooth is loose, it's going to fall out!","¡Se me mueve un diente, se va a caer!","🦷"],
+      ["High five, you did a great job!","¡Choca esos cinco, hiciste un gran trabajo!","🙌"]
+    ]
+  },
   friends:{
     basic:[
       ["friend","amigo","🧑‍🤝‍🧑"],["game","juego","🎲"],["park","parque","🌳"],["school","escuela","🏫"],
@@ -1327,7 +1371,7 @@ document.querySelectorAll("[data-mission]").forEach(b=>b.addEventListener("click
 $("mathBack").addEventListener("click",()=>{hush();$("mathPick").hidden=true;$("start").hidden=false;pickGreet()});
 
 /* ---------- Spanish setup: category, level, how many ---------- */
-const CAT_LABEL={house:["🏠","Home"],family:["👨‍👩‍👦","Family"],friends:["🧑‍🤝‍🧑","Friends"]};
+const CAT_LABEL={house:["🏠","Home"],family:["👨‍👩‍👦","Family"],friends:["🧑‍🤝‍🧑","Friends"],body:["🖐️","Body"]};
 const LVL_LABEL={basic:["🐣","Basic"],medium:["🐥","Medium"],fluent:["🦅","Fluent"]};
 const es={step:0,cat:null,lvl:null,num:10,list:[],i:0,run:0,learned:[],busy:false};
 function esCrumbs(){
